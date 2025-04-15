@@ -11,7 +11,7 @@ from simulacion.graficos import generar_grafico_desvio_estandar, generar_grafico
 from simulacion.simulador import simular_corridas
 
 
-def 
+
 if __name__ == "__main__":
     args = parse_args()
 
