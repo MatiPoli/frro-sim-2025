@@ -25,15 +25,6 @@ if __name__ == "__main__":
 
     corridas = simular_corridas(cantidad_corridas, cantidad_tiradas)
 
-    frecuencias_relativas = [
-        frecuencias_relativa_por_corrida(numero_elegido, corrida)
-        for corrida in corridas
-    ]
-    generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
-
-    promedios = [
-        promedios_por_corrida(corrida)
-        for corrida in corridas
-    ]
-    generar_grafico_valor_promedio(promedios)
+    generar_grafico_frecuencia_relativa(corridas, numero_elegido)
+    generar_grafico_valor_promedio(corridas)
     generar_grafico_desvio_estandar(corridas)

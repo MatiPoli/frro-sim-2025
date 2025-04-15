@@ -2,6 +2,8 @@ import math
 from matplotlib import pyplot as plt
 import statistics
 
+from simulacion.estadisticas import frecuencias_relativa_por_corrida, promedios_por_corrida
+
 
 def generar_grafico_desvio_estandar(corridas: list[list[int]]) -> None:
     cantidad_tiradas = len(corridas[0])  # Cantidad de tiradas por corrida
@@ -28,8 +30,14 @@ def generar_grafico_desvio_estandar(corridas: list[list[int]]) -> None:
     plt.close()
 
 def generar_grafico_frecuencia_relativa(
-    frecuencias_relativas: list[list[float]], numero_elegido: int
+    corridas: list[list[int]], numero_elegido: int
 ) -> None:
+    # Calcular las frecuencias relativas acumuladas para cada corrida
+    frecuencias_relativas = [
+        frecuencias_relativa_por_corrida(numero_elegido, corrida)
+        for corrida in corridas
+    ]
+
     cantidad_tiradas = len(frecuencias_relativas[0])
 
     for i, fr in enumerate(frecuencias_relativas):
@@ -39,22 +47,35 @@ def generar_grafico_frecuencia_relativa(
     plt.xlabel("Número de tiradas")
     plt.ylabel("Frecuencia relativa acumulada")
     plt.title(f"Evolución de la frecuencia relativa del número {numero_elegido}")
+    plt.legend()  # Agregalo si querés que aparezcan las etiquetas de cada corrida
     plt.grid(True)
     plt.tight_layout()
     plt.savefig("frecuencia_relativa_x_tiradas.png")
     plt.close()
 
 
-def generar_grafico_valor_promedio(promedios: list[list[float]]) -> None:
+def generar_grafico_valor_promedio(corridas: list[list[int]]) -> None:
+    # Calcular los promedios acumulados para cada corrida
+    promedios = [
+        promedios_por_corrida(corrida)
+        for corrida in corridas
+    ]
+
     cantidad_tiradas = len(promedios[0])
 
     for i, prom in enumerate(promedios):
         plt.plot(range(1, cantidad_tiradas + 1), prom, label=f"Corrida {i + 1}")
 
-    plt.axhline(y=sum([x for x in range(0, 37)])/37, color="red", linestyle="--", label="Valor Promedio Esperado")
+    plt.axhline(
+        y=sum(range(0, 37)) / 37,  # Valor esperado de una ruleta de 0 a 36 (uniforme)
+        color="red",
+        linestyle="--",
+        label="Valor Promedio Esperado"
+    )
     plt.xlabel("Número de tiradas")
     plt.ylabel("Valor promedio acumulado")
-    plt.title(f"Evolución del valor promedio")
+    plt.title("Evolución del valor promedio")
+    plt.legend()
     plt.grid(True)
     plt.tight_layout()
     plt.savefig("valor_promedio_x_tiradas.png")
