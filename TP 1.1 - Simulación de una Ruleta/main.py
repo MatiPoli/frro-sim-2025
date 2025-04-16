@@ -2,14 +2,16 @@ import argparse
 
 from simulador import generar_corridas
 from estadisticas import (
-    calcular_frecuencias_relativas,
-    calcular_desvios_estandar,
     calcular_promedios,
+    calcular_varianzas,
+    calcular_desvios_estandar,
+    calcular_frecuencias_relativas,
 )
 from graficos import (
-    generar_grafico_frecuencia_relativa,
+    generar_grafico_varianza,
     generar_grafico_valor_promedio,
     generar_grafico_desvio_estandar,
+    generar_grafico_frecuencia_relativa,
 )
 
 
@@ -44,10 +46,12 @@ def main(cantidad_corridas: int, cantidad_tiradas: int, numero_elegido: int) -> 
     frecuencias_relativas = calcular_frecuencias_relativas(corridas, numero_elegido)
     promedios = calcular_promedios(corridas)
     desvios_estandar = calcular_desvios_estandar(corridas)
+    varianzas = calcular_varianzas(corridas)
 
-    generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
+    generar_grafico_varianza(varianzas)
     generar_grafico_valor_promedio(promedios)
     generar_grafico_desvio_estandar(desvios_estandar)
+    generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
 
 
 if __name__ == "__main__":
