@@ -1,7 +1,6 @@
 import math
 from matplotlib import pyplot as plt
-
-
+import numpy as np
 def generar_grafico_desvio_estandar(desvios_estandar: list[list[float]]) -> None:
     plt.figure(figsize=(12, 8))
     cantidad_tiradas = len(desvios_estandar[0])
@@ -88,3 +87,24 @@ def generar_grafico_varianza(varianzas: list[list[float]]) -> None:
     plt.legend()
     plt.savefig("Graficos/varianza_x_tiradas.png")
     plt.close()
+
+
+def generar_grafico_frecuencia_por_numero(todas_las_tiradas: list[int]) -> None:
+    conteo = np.zeros(37)
+    for num in todas_las_tiradas:
+        conteo[num] += 1
+
+    frecuencia_relativa = conteo / len(todas_las_tiradas)
+
+    plt.figure(figsize=(12, 6))
+    plt.bar(range(37), frecuencia_relativa, color='skyblue', edgecolor='black', label='Frecuencia relativa simulada')
+    plt.axhline(y=1/37, color='red', linestyle='--', label='Frecuencia esperada (1/37)')
+    plt.xlabel("Número de la ruleta")
+    plt.ylabel("Frecuencia relativa")
+    plt.title("Frecuencia relativa de cada número en la simulación")
+    plt.legend()
+    plt.grid(True, axis='y')
+    plt.tight_layout()
+    plt.savefig("Graficos/frecuencia_relativa_por_numero.png")
+    plt.close()
+
