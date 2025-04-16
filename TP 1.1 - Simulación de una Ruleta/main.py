@@ -6,6 +6,7 @@ from estadisticas import (
     calcular_varianzas,
     calcular_desvios_estandar,
     calcular_frecuencias_relativas,
+    calcular_frecuencias_absolutas,
 )
 from graficos import (
     generar_grafico_frecuencia_por_numero,
@@ -13,6 +14,7 @@ from graficos import (
     generar_grafico_valor_promedio,
     generar_grafico_desvio_estandar,
     generar_grafico_frecuencia_relativa,
+    generar_heat_map_frecuencia_absoluta,
 )
 
 
@@ -48,12 +50,14 @@ def main(cantidad_corridas: int, cantidad_tiradas: int, numero_elegido: int) -> 
     promedios = calcular_promedios(corridas)
     desvios_estandar = calcular_desvios_estandar(corridas)
     varianzas = calcular_varianzas(corridas)
+    frecuencias_absolutas = calcular_frecuencias_absolutas(corridas)
 
     generar_grafico_varianza(varianzas)
     generar_grafico_valor_promedio(promedios)
     generar_grafico_desvio_estandar(desvios_estandar)
     generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
-    generar_grafico_frecuencia_por_numero(corridas[0])
+    generar_heat_map_frecuencia_absoluta(frecuencias_absolutas)
+
 
 if __name__ == "__main__":
     args = parse_args()

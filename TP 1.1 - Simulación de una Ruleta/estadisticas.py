@@ -55,3 +55,6 @@ def calcular_desvios_estandar(corridas: list[list[int]]) -> list[list[float]]:
 
 def calcular_varianzas(corridas: list[list[int]]) -> list[list[float]]:
     return [varianzas_por_corrida(corrida) for corrida in corridas]
+
+def calcular_frecuencias_absolutas(corridas: list[list[int]]) -> list[list[int]]:
+    return [[corrida.count(i) for i in range(37)] for corrida in corridas]

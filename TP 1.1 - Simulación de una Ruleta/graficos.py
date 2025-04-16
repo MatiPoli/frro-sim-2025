@@ -108,3 +108,16 @@ def generar_grafico_frecuencia_por_numero(todas_las_tiradas: list[int]) -> None:
     plt.savefig("Graficos/frecuencia_relativa_por_numero.png")
     plt.close()
 
+
+def generar_heat_map_frecuencia_absoluta(frecuencias_absolutas: list[list[int]]) -> None:
+    plt.figure(figsize=(12, 8))
+    plt.imshow(frecuencias_absolutas, cmap="inferno", aspect="auto")
+    plt.colorbar(label="Frecuencia")
+    plt.title("Heatmap de frecuencias por número (0-36) en cada corrida")
+    plt.xlabel("Número de ruleta")
+    plt.ylabel("Corrida simulada")
+    plt.xticks(ticks=range(37), labels=range(37), rotation=90)
+    plt.yticks(ticks=range(len(frecuencias_absolutas)), labels=[f"Corrida {i+1}" for i in range(len(frecuencias_absolutas))], rotation=0)
+    plt.tight_layout()
+    plt.savefig("Graficos/heatmap_frecuencia_absoluta.png")
+    plt.close()
