@@ -10,12 +10,12 @@ def generar_grafico_desvio_estandar(desvios_estandar: list[list[float]]) -> None
     for i, desv in enumerate(desvios_estandar):
         plt.plot(range(2, cantidad_tiradas + 1), desv[1:], label=f"Corrida {i + 1}")
 
-    plt.xlabel("Número de tiradas")
-    plt.ylabel("Desvío estándar acumulado")
-    plt.title("Evolución del desvío estándar en cada corrida")
     plt.axhline(
         y=desvio_esperado, color="red", linestyle="--", label="Desvio estandar esperado"
     )
+    plt.xlabel("Número de tiradas")
+    plt.ylabel("Desvío estándar acumulado")
+    plt.title("Evolución del desvío estándar en cada corrida")
     plt.grid(True)
     plt.tight_layout()
     plt.legend()
@@ -65,4 +65,26 @@ def generar_grafico_valor_promedio(promedios: list[list[float]]) -> None:
     plt.tight_layout()
     plt.legend()
     plt.savefig("Graficos/valor_promedio_x_tiradas.png")
+    plt.close()
+
+
+def generar_grafico_varianza(varianzas: list[list[float]]) -> None:
+    plt.figure(figsize=(12, 8))
+    cantidad_tiradas = len(varianzas[0])
+
+    varianza_esperada = (37**2 - 1) / 12
+
+    for i, var in enumerate(varianzas):
+        plt.plot(range(2, cantidad_tiradas + 1), var[1:], label=f"Corrida {i + 1}")
+
+    plt.axhline(
+        y=varianza_esperada, color="red", linestyle="--", label="Varianza esperada"
+    )
+    plt.xlabel("Número de tiradas")
+    plt.ylabel("Varianza acumulada")
+    plt.title("Evolución de la varianza")
+    plt.grid()
+    plt.tight_layout()
+    plt.legend()
+    plt.savefig("Graficos/varianza_x_tiradas.png")
     plt.close()
