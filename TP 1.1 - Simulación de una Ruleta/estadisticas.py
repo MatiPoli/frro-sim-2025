@@ -29,6 +29,13 @@ def desvios_estandar_por_corrida(corrida: list[int]) -> list[float]:
     ]
 
 
+def varianzas_por_corrida(corrida: list[int]) -> list[float]:
+    return [
+        statistics.variance(corrida[:i]) if i > 1 else 0
+        for i in range(1, len(corrida) + 1)
+    ]
+
+
 def calcular_promedios(corridas: list[list[int]]) -> list[list[float]]:
     return [promedios_por_corrida(corrida) for corrida in corridas]
 
@@ -44,3 +51,7 @@ def calcular_frecuencias_relativas(
 
 def calcular_desvios_estandar(corridas: list[list[int]]) -> list[list[float]]:
     return [desvios_estandar_por_corrida(corrida) for corrida in corridas]
+
+
+def calcular_varianzas(corridas: list[list[int]]) -> list[list[float]]:
+    return [varianzas_por_corrida(corrida) for corrida in corridas]
