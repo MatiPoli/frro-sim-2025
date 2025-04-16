@@ -58,7 +58,7 @@ if __name__ == "__main__":
     args = parse_args()
 
     cantidad_corridas = args.corridas
-    cantidad_tiradas = args.tirradas
+    cantidad_tiradas = args.tiradas
     numero_elegido = args.elegido
 
     main(cantidad_corridas, cantidad_tiradas, numero_elegido)
