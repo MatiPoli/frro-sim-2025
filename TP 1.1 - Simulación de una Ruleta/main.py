@@ -6,12 +6,14 @@ from estadisticas import (
     calcular_varianzas,
     calcular_desvios_estandar,
     calcular_frecuencias_relativas,
+    calcular_frecuencias_absolutas,
 )
 from graficos import (
     generar_grafico_varianza,
     generar_grafico_valor_promedio,
     generar_grafico_desvio_estandar,
     generar_grafico_frecuencia_relativa,
+    generar_heat_map_frecuencia_absoluta,
 )
 
 
@@ -43,16 +45,19 @@ def parse_args():
 def main(cantidad_corridas: int, cantidad_tiradas: int, numero_elegido: int) -> None:
     corridas = generar_corridas(cantidad_corridas, cantidad_tiradas)
 
-    frecuencias_relativas = calcular_frecuencias_relativas(corridas, numero_elegido)
-    promedios = calcular_promedios(corridas)
-    desvios_estandar = calcular_desvios_estandar(corridas)
-    varianzas = calcular_varianzas(corridas)
+    # frecuencias_relativas = calcular_frecuencias_relativas(corridas, numero_elegido)
+    # promedios = calcular_promedios(corridas)
+    # desvios_estandar = calcular_desvios_estandar(corridas)
+    # varianzas = calcular_varianzas(corridas)
+    frecuencias_absolutas = calcular_frecuencias_absolutas(corridas)
 
-    generar_grafico_varianza(varianzas)
-    generar_grafico_valor_promedio(promedios)
-    generar_grafico_desvio_estandar(desvios_estandar)
-    generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
+    # generar_grafico_varianza(varianzas)
+    # generar_grafico_valor_promedio(promedios)
+    # generar_grafico_desvio_estandar(desvios_estandar)
+    # generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
+    generar_heat_map_frecuencia_absoluta(frecuencias_absolutas)
 
+    print("Simulación completada. Los gráficos han sido generados en la carpeta 'Graficos'.")
 
 if __name__ == "__main__":
     args = parse_args()
