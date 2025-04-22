@@ -55,8 +55,9 @@ def main(cantidad_corridas: int, cantidad_tiradas: int, numero_elegido: int) -> 
     generar_grafico_varianza(varianzas)
     generar_grafico_valor_promedio(promedios)
     generar_grafico_desvio_estandar(desvios_estandar)
-    generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
+    generar_grafico_frecuencia_por_numero(corridas[0])
     generar_heat_map_frecuencia_absoluta(frecuencias_absolutas)
+    generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
 
 
 if __name__ == "__main__":
