@@ -4,6 +4,7 @@ class Ruleta:
     def __init__(self):
         self.numeros = np.arange(0, 37)
         self.colores = self._asignar_colores()
+        self.columnas = self._asignar_columnas()
 
     def _asignar_colores(self):
         colores = {0: 'verde'}
@@ -11,6 +12,19 @@ class Ruleta:
         for n in self.numeros[1:]:
             colores[n] = 'rojo' if n in rojos else 'negro'
         return colores
+
+    def _asignar_columnas(self):
+        columnas = {}
+        for n in self.numeros:
+            if n == 0:
+                columnas[n] = 'ninguna'
+            elif n % 3 == 1:
+                columnas[n] = '1ra'
+            elif n % 3 == 2:
+                columnas[n] = '2da'
+            else:
+                columnas[n] = '3ra'
+        return columnas
 
     def girar(self):
         resultado = np.random.choice(self.numeros)
@@ -22,14 +36,23 @@ class Ruleta:
             '3ra' if 25 <= resultado <= 36 else
             'ninguna'
         )
+        mitad = (
+            '1ra mitad' if 1 <= resultado <= 18 else
+            '2da mitad' if 19 <= resultado <= 36 else
+            'ninguna'
+        )
+        columna = self.columnas[resultado]
+
         return {
             'numero': resultado,
             'color': color,
             'paridad': paridad,
-            'docena': docena
+            'docena': docena,
+            'mitad': mitad,
+            'columna': columna
         }
 
-# Ejemplo simple para probar
+# Prueba del simulador
 if __name__ == "__main__":
     ruleta = Ruleta()
     resultado = ruleta.girar()
@@ -37,3 +60,5 @@ if __name__ == "__main__":
     print(f"🎨 Color: {resultado['color']}")
     print(f"➗ Paridad: {resultado['paridad']}")
     print(f"📦 Docena: {resultado['docena']}")
+    print(f"🌓 Mitad: {resultado['mitad']}")
+    print(f"📊 Columna: {resultado['columna']}")
