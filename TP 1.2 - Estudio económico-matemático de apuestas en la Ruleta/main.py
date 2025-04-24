@@ -1,64 +1,78 @@
-import numpy as np
+import argparse
 
-class Ruleta:
-    def __init__(self):
-        self.numeros = np.arange(0, 37)
-        self.colores = self._asignar_colores()
-        self.columnas = self._asignar_columnas()
+from simulador import generar_corridas
+from estadisticas import (
+    calcular_frecuencias_relativas,
+    calcular_frecuencias_absolutas,
+)
+from graficos import (
+    generar_grafico_frecuencia_por_numero,
+    generar_grafico_frecuencia_relativa,
+)
 
-    def _asignar_colores(self):
-        colores = {0: 'verde'}
-        rojos = {1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36}
-        for n in self.numeros[1:]:
-            colores[n] = 'rojo' if n in rojos else 'negro'
-        return colores
 
-    def _asignar_columnas(self):
-        columnas = {}
-        for n in self.numeros:
-            if n == 0:
-                columnas[n] = 'ninguna'
-            elif n % 3 == 1:
-                columnas[n] = '1ra'
-            elif n % 3 == 2:
-                columnas[n] = '2da'
-            else:
-                columnas[n] = '3ra'
-        return columnas
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Simulación de ruleta",
+    )
+    parser.add_argument(
+        "-c", "--corridas", type=int, required=True, help="Cantidad de corridas"
+    )
+    parser.add_argument(
+        "-n",
+        "--tiradas",
+        type=int,
+        required=True,
+        help="Cantidad de tiradas por corrida",
+    )
+    parser.add_argument(
+        "-e",
+        "--elegido",
+        type=int,
+        required=True,
+        choices=range(0, 37),
+        help="Número elegido (entre 0 y 36)",
+    )
+    parser.add_argument(
+        "-s",
+        "--estrategia",
+        type=str,
+        required=True,
+        choices=["m", "d", "f","o"],
+        default=None,
+        help="Tipo de estrategia a utilizar: martingala (m), d'Alembert (d), Fibonacci (f) u otra (o)",
+    )
+    parser.add_argument(
+        "-a",
+        "--capital",
+        type=str,
+        required=True,
+        choices=["i","f"],
+        default=None,
+        help="Tipo de capital a utilizar: infinito (i) o finito (f)",
+    )
 
-    def girar(self):
-        resultado = np.random.choice(self.numeros)
-        color = self.colores[resultado]
-        paridad = 'par' if resultado != 0 and resultado % 2 == 0 else 'impar' if resultado != 0 else 'ninguna'
-        docena = (
-            '1ra' if 1 <= resultado <= 12 else
-            '2da' if 13 <= resultado <= 24 else
-            '3ra' if 25 <= resultado <= 36 else
-            'ninguna'
-        )
-        mitad = (
-            '1ra mitad' if 1 <= resultado <= 18 else
-            '2da mitad' if 19 <= resultado <= 36 else
-            'ninguna'
-        )
-        columna = self.columnas[resultado]
+    return parser.parse_args()
 
-        return {
-            'numero': resultado,
-            'color': color,
-            'paridad': paridad,
-            'docena': docena,
-            'mitad': mitad,
-            'columna': columna
-        }
 
-# Prueba del simulador
+def main(cantidad_corridas: int, cantidad_tiradas: int, numero_elegido: int, estrategia: str, capital: str) -> None:
+    corridas = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
+
+    frecuencias_relativas = calcular_frecuencias_relativas(corridas, numero_elegido)
+    frecuencias_absolutas = calcular_frecuencias_absolutas(corridas)
+
+    generar_grafico_frecuencia_por_numero(corridas[0])
+    generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
+
+
 if __name__ == "__main__":
-    ruleta = Ruleta()
-    resultado = ruleta.girar()
-    print(f"🎯 Número: {resultado['numero']}")
-    print(f"🎨 Color: {resultado['color']}")
-    print(f"➗ Paridad: {resultado['paridad']}")
-    print(f"📦 Docena: {resultado['docena']}")
-    print(f"🌓 Mitad: {resultado['mitad']}")
-    print(f"📊 Columna: {resultado['columna']}")
+    args = parse_args()
+
+    cantidad_corridas = 1 # args.corridas
+    cantidad_tiradas = args.tiradas
+    numero_elegido = args.elegido
+    estrategia = args.estrategia
+    capital = args.capital
+
+
+    main(cantidad_corridas, cantidad_tiradas, numero_elegido, estrategia, capital)
