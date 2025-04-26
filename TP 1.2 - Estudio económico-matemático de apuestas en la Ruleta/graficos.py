@@ -138,3 +138,34 @@ def generar_heat_map_frecuencia_absoluta(
     plt.tight_layout()
     plt.savefig("Graficos/heatmap_frecuencia_absoluta.png")
     plt.close()
+
+
+def graficar_saldo(saldo_por_tirada: list[int]):
+    saldo_inicial = saldo_por_tirada[0]  # Obtener el saldo inicial
+    plt.figure(figsize=(10, 6))
+    plt.plot(saldo_por_tirada, label="Saldo", color="blue")
+    plt.axhline(y=saldo_inicial, color="green", linestyle="--", label="Saldo inicial")  # Línea constante
+    plt.xlabel("Número de tiradas")
+    plt.ylabel("Saldo")
+    plt.title("Evolución del saldo a lo largo de las tiradas")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+def generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas: list[list[float]]) -> None:
+    plt.figure(figsize=(12, 8))
+    cantidad_tiradas = len(frecuencias_relativas[0])
+
+    for i, fr in enumerate(frecuencias_relativas):
+        plt.plot(range(1, cantidad_tiradas + 1), fr, label=f"Corrida {i + 1}")
+
+    plt.axhline(
+        y=18 / 37, color="red", linestyle="--", label="Frecuencia Relativa Esperada (18/37)"
+    )
+    plt.xlabel("Número de tiradas")
+    plt.ylabel("Frecuencia relativa acumulada")
+    plt.title("Evolución de la frecuencia relativa de obtener la apuesta favorable")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.legend()
+    plt.show()

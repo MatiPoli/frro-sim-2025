@@ -8,6 +8,8 @@ from estadisticas import (
 from graficos import (
     generar_grafico_frecuencia_por_numero,
     generar_grafico_frecuencia_relativa,
+    graficar_saldo,
+    generar_grafico_frecuencia_apuesta_favorable
 )
 
 
@@ -54,21 +56,24 @@ def parse_args():
 
     return parser.parse_args()
 
-
 def main(cantidad_corridas: int, cantidad_tiradas: int, numero_elegido: int, estrategia: str, capital: str) -> None:
-    corridas = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
+    
+    corridas, saldo_por_tirada, frecuencias_relativas = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
+    graficar_saldo(saldo_por_tirada)
+    generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas)
 
-    frecuencias_relativas = calcular_frecuencias_relativas(corridas, numero_elegido)
-    frecuencias_absolutas = calcular_frecuencias_absolutas(corridas)
+    #frecuencias_relativas = calcular_frecuencias_relativas(corridas, numero_elegido)
+    #frecuencias_absolutas = calcular_frecuencias_absolutas(corridas)
 
-    generar_grafico_frecuencia_por_numero(corridas[0])
-    generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
+    #generar_grafico_frecuencia_por_numero(corridas[0])
+    #generar_grafico_frecuencia_relativa(frecuencias_relativas, numero_elegido)
 
 
 if __name__ == "__main__":
     args = parse_args()
 
-    cantidad_corridas = 1 # args.corridas
+    cantidad_corridas = args.corridas
+    cantidad_corridas = 1
     cantidad_tiradas = args.tiradas
     numero_elegido = args.elegido
     estrategia = args.estrategia
