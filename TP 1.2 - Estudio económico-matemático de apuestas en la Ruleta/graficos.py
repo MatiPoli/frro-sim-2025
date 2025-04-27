@@ -169,3 +169,15 @@ def generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas: list[lis
     plt.tight_layout()
     plt.legend()
     plt.show()
+
+def graficar_apuesta_realizada(apuesta_por_tirada: list[int]):
+    apuesta_inicial = apuesta_por_tirada[0]  # Obtener la primera apuesta (si querés marcarla)
+    plt.figure(figsize=(10, 6))
+    plt.plot(apuesta_por_tirada, label="Apuesta realizada", color="red")
+    plt.axhline(y=apuesta_inicial, color="orange", linestyle="--", label="Apuesta inicial")  # Línea constante
+    plt.xlabel("Número de tiradas")
+    plt.ylabel("Monto apostado")
+    plt.title("Evolución de la apuesta realizada a lo largo de las tiradas")
+    plt.legend()
+    plt.grid(True)
+    plt.show()

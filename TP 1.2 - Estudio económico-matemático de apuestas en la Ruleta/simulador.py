@@ -19,7 +19,7 @@ def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: 
     corridas = []
     saldo_por_tirada = []  # Lista para registrar el saldo después de cada tirada
     frecuencias_relativas = []  # Lista para registrar las frecuencias relativas acumuladas
-
+    apuestas = []  # Lista para registrar las apuestas realizadas
     # Registrar el saldo inicial
     saldo_por_tirada.append(saldo)
 
@@ -35,7 +35,7 @@ def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: 
             # Si el saldo es insuficiente, detener la simulación
             if capital == "f" and resultado == 0:
                 break
-
+            apuestas.append(apuesta) # Registrar la apuesta actual
             calcular_prox__apuesta(estrategia, resultado)
             tiradas.append(numero)
             saldo_por_tirada.append(saldo)  # Registrar el saldo actual
@@ -53,7 +53,7 @@ def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: 
         corridas.append(tiradas)
         frecuencias_relativas.append(frecuencias_corrida)
 
-    return corridas, saldo_por_tirada, frecuencias_relativas
+    return corridas, saldo_por_tirada, frecuencias_relativas,apuestas
 
 def evaluar_apuesta_actualiza_saldo(numero_obtenido: int, capital: str) -> int:
     global saldo, apuesta, color_rojo

@@ -8,6 +8,7 @@ from estadisticas import (
 from graficos import (
     generar_grafico_frecuencia_por_numero,
     generar_grafico_frecuencia_relativa,
+    graficar_apuesta_realizada,
     graficar_saldo,
     generar_grafico_frecuencia_apuesta_favorable
 )
@@ -58,10 +59,10 @@ def parse_args():
 
 def main(cantidad_corridas: int, cantidad_tiradas: int, numero_elegido: int, estrategia: str, capital: str) -> None:
     
-    corridas, saldo_por_tirada, frecuencias_relativas = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
+    corridas, saldo_por_tirada, frecuencias_relativas,apuestas = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
     graficar_saldo(saldo_por_tirada)
     generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas)
-
+    graficar_apuesta_realizada(apuestas)
     #frecuencias_relativas = calcular_frecuencias_relativas(corridas, numero_elegido)
     #frecuencias_absolutas = calcular_frecuencias_absolutas(corridas)
 
