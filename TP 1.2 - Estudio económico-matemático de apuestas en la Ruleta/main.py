@@ -59,8 +59,8 @@ def parse_args():
 
 def main(cantidad_corridas: int, cantidad_tiradas: int, numero_elegido: int, estrategia: str, capital: str) -> None:
     
-    corridas, saldo_por_tirada, frecuencias_relativas,apuestas = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
-    graficar_saldo(saldo_por_tirada)
+    corridas, saldo_por_tirada, frecuencias_relativas,apuestas, tiradas_bancarrota = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
+    graficar_saldo(saldo_por_tirada, tiradas_bancarrota)
     generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas)
     graficar_apuesta_realizada(apuestas)
     #frecuencias_relativas = calcular_frecuencias_relativas(corridas, numero_elegido)

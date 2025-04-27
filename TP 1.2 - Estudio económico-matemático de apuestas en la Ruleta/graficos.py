@@ -140,9 +140,14 @@ def generar_heat_map_frecuencia_absoluta(
     plt.close()
 
 
-def graficar_saldo(saldo_por_tirada: list[int]):
+def graficar_saldo(saldo_por_tirada: list[int], tiradas_bancarrota: list[int]) -> None:
+    
     saldo_inicial = saldo_por_tirada[0]  # Obtener el saldo inicial
     plt.figure(figsize=(10, 6))
+    for tirada in tiradas_bancarrota:
+        plt.scatter(tirada, saldo_por_tirada[tirada], color="red", zorder=5)
+    plt.text(0.95, 0.01, f"Bancarrotas: {len(tiradas_bancarrota)}", transform=plt.gca().transAxes, 
+         fontsize=12, color="black", ha='right', va='bottom', bbox=dict(facecolor='white', alpha=0.5))
     plt.plot(saldo_por_tirada, label="Saldo", color="blue")
     plt.axhline(y=saldo_inicial, color="green", linestyle="--", label="Saldo inicial")  # Línea constante
     plt.xlabel("Número de tiradas")
