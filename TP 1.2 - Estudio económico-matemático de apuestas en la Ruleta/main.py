@@ -8,6 +8,10 @@ from graficos import (
     generar_grafico_frecuencia_apuesta_favorable
 )
 
+import os
+
+if not os.path.exists("Graficos"):
+    os.makedirs("Graficos")
 
 def parse_args():
     parser = argparse.ArgumentParser(
