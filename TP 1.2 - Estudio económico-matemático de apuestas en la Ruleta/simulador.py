@@ -62,8 +62,7 @@ def evaluar_apuesta_actualiza_saldo(numero_obtenido: int, capital: str) -> int:
     # Verificar si el saldo es suficiente para apostar
     if capital == "f" and saldo < apuesta:
         print("Saldo insuficiente para continuar apostando.")
-        saldo = 100  # Reiniciar el saldo a 100
-        apuesta = 1  # Reiniciar la apuesta a 1
+        reiniciar_apuesta()
         cantidad_bancarrotas +=1
         return 0  # Indica que no se puede continuar
 
@@ -74,6 +73,13 @@ def evaluar_apuesta_actualiza_saldo(numero_obtenido: int, capital: str) -> int:
     else:
         return -1  # Pierde
     
+def reiniciar_apuesta() -> None:
+    global saldo, apuesta, apuesta_inicial, indice_fibonacci
+    saldo = 10000
+    apuesta = 1
+    apuesta_inicial = 1
+    indice_fibonacci = 0
+
 def calcular_prox__apuesta(estrategia: str, resultado:int) -> int:
     global apuesta, apuesta_inicial, indice_fibonacci, fibonacci_secuencia
     
