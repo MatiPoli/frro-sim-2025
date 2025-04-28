@@ -1,21 +1,31 @@
 import math
-from matplotlib import pyplot as plt
+from matplotlib import cm, pyplot as plt
 import numpy as np
 
 
 
 #plt.savefig("Graficos/desvio_estandar_x_tiradas.png")
 
-def graficar_saldo(saldo_por_tirada: list[int], tiradas_bancarrota: list[int]) -> None:
+def graficar_saldo(corridas_saldo: list[list[int]], corridas_bancarrota: list[list[int]]) -> None:
     
-    saldo_inicial = saldo_por_tirada[0]  # Obtener el saldo inicial
-    plt.figure(figsize=(10, 6))
-    for tirada in tiradas_bancarrota:
-        plt.scatter(tirada, saldo_por_tirada[tirada], color="red", zorder=5)
-    plt.text(0.95, 0.01, f"Bancarrotas: {len(tiradas_bancarrota)}", transform=plt.gca().transAxes, 
-         fontsize=12, color="black", ha='right', va='bottom', bbox=dict(facecolor='white', alpha=0.5))
-    plt.plot(saldo_por_tirada, label="Saldo", color="blue")
-    plt.axhline(y=saldo_inicial, color="green", linestyle="--", label="Saldo inicial")  # Línea constante
+    colormap = cm.get_cmap("tab20") 
+    num_colores = len(corridas_saldo)
+
+    plt.figure(figsize=(12, 8))
+    tot_bancarrotas = 0
+    cantidad_tiradas = len(corridas_saldo[0])
+    saldo_inicial = corridas_saldo[0][0]  # Obtener el saldo inicial  
+    plt.axhline(y=saldo_inicial, color="green", linestyle="--", label="Saldo inicial")   
+    for i, (saldo_por_tirada, tiradas_bancarrota) in enumerate(zip(corridas_saldo, corridas_bancarrota)):
+        color = colormap(i / num_colores)
+        plt.plot(range(1, cantidad_tiradas + 1), saldo_por_tirada, label=f"Corrida {i + 1}", color=color)
+        for tirada in tiradas_bancarrota:
+            plt.scatter(tirada, saldo_por_tirada[tirada], zorder=5, color=color)
+        tot_bancarrotas += len(tiradas_bancarrota)
+
+
+    prom_bancarrotas = tot_bancarrotas / len(corridas_bancarrota) if len(corridas_bancarrota) > 0 else 0    
+    plt.text(0.95, 0.01, f"Promedio Bancarrotas: {prom_bancarrotas}", transform=plt.gca().transAxes,fontsize=12, color="black", ha='right', va='bottom', bbox=dict(facecolor='white', alpha=0.5))
     plt.xlabel("Número de tiradas")
     plt.ylabel("Saldo")
     plt.title("Evolución del saldo a lo largo de las tiradas")
@@ -45,10 +55,11 @@ def generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas: list[lis
     plt.show()
 
 
-def graficar_apuesta_realizada(apuesta_por_tirada: list[int]):
-    apuesta_inicial = apuesta_por_tirada[0]  # Obtener la primera apuesta (si querés marcarla)
+def graficar_apuesta_realizada(corridas_apuestas: list[list[int]]):
+    apuesta_inicial = corridas_apuestas[0][0]  # Obtener la primera apuesta (si querés marcarla)
     plt.figure(figsize=(10, 6))
-    plt.plot(apuesta_por_tirada, label="Apuesta realizada", color="red")
+    for i, apuesta_por_tirada in enumerate(corridas_apuestas):
+        plt.plot(range(1, len(apuesta_por_tirada) + 1), apuesta_por_tirada, label=f"Corrida {i + 1}")
     plt.axhline(y=apuesta_inicial, color="orange", linestyle="--", label="Apuesta inicial")  # Línea constante
     plt.xlabel("Número de tiradas")
     plt.ylabel("Monto apostado")

@@ -49,9 +49,8 @@ def parse_args():
     return parser.parse_args()
 
 def main(cantidad_corridas: int, cantidad_tiradas: int, estrategia: str, capital: str) -> None:
-    
-    corridas, saldo_por_tirada, frecuencias_relativas,apuestas, tiradas_bancarrota = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
-    graficar_saldo(saldo_por_tirada, tiradas_bancarrota)
+    corridas, corridas_saldo, frecuencias_relativas,apuestas, corridas_bancarrota = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
+    graficar_saldo(corridas_saldo, corridas_bancarrota)
     generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas)
     graficar_apuesta_realizada(apuestas)
 
@@ -60,7 +59,6 @@ if __name__ == "__main__":
     args = parse_args()
 
     cantidad_corridas = args.corridas
-    cantidad_corridas = 1
     cantidad_tiradas = args.tiradas
     estrategia = args.estrategia
     capital = args.capital

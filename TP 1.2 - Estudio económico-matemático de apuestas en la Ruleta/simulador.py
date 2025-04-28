@@ -17,16 +17,19 @@ def tirar_numero() -> int:
 def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: str, capital: str) -> tuple[list[list[int]], list[int], list[list[float]]]:
     global saldo, apuesta
     corridas = []
-    saldo_por_tirada = []  # Lista para registrar el saldo después de cada tirada
+    corridas_saldo = []  # Lista para registrar el saldo después de cada tirada
     frecuencias_relativas = []  # Lista para registrar las frecuencias relativas acumuladas
-    apuestas = []  # Lista para registrar las apuestas realizadas
+    corridas_apuestas = []  # Lista para registrar las apuestas realizadas
     # Registrar el saldo inicial
-    saldo_por_tirada.append(saldo)
-    tiradas_bancarrota = []  # Lista para registrar las tiradas en las que se llegó a la bancarrota
+    corridas_bancarrota = []  # Lista para registrar las tiradas en las que se llegó a la bancarrota
     for _ in range(cantidad_corridas):
         tiradas = []
         exitos = 0  # Contador de éxitos (números rojos)
         frecuencias_corrida = []  # Frecuencias relativas para esta corrida
+        tiradas_bancarrota = []
+        saldo_por_tirada = []
+        apuestas = []
+        saldo_por_tirada.append(saldo)
 
         for tirada in range(1, cantidad_tiradas + 1):
             numero = tirar_numero()
@@ -34,7 +37,7 @@ def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: 
 
             # Si el saldo es insuficiente, detener la simulación
             if capital == "f" and resultado == 0:
-                tiradas_bancarrota.append(len(saldo_por_tirada))
+                tiradas_bancarrota.append(len(saldo_por_tirada) + 1)
 
             apuestas.append(apuesta) # Registrar la apuesta actual
             calcular_prox__apuesta(estrategia, resultado)
@@ -49,19 +52,22 @@ def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: 
             frecuencia_relativa = exitos / tirada
             frecuencias_corrida.append(frecuencia_relativa)
 
-            print(f"Tirada: {tirada}, Número: {numero}, Saldo: {saldo}, Apuesta: {apuesta}, Frecuencia Relativa: {frecuencia_relativa}")
+            # print(f"Tirada: {tirada}, Número: {numero}, Saldo: {saldo}, Apuesta: {apuesta}, Frecuencia Relativa: {frecuencia_relativa}")
 
         corridas.append(tiradas)
         frecuencias_relativas.append(frecuencias_corrida)
+        corridas_bancarrota.append(tiradas_bancarrota)
+        corridas_saldo.append(saldo_por_tirada)
+        corridas_apuestas.append(apuestas)
 
-    return corridas, saldo_por_tirada, frecuencias_relativas,apuestas, tiradas_bancarrota
+    return corridas, corridas_saldo, frecuencias_relativas,corridas_apuestas, corridas_bancarrota
 
 def evaluar_apuesta_actualiza_saldo(numero_obtenido: int, capital: str) -> int:
     global saldo, apuesta, color_rojo, cantidad_bancarrotas
 
     # Verificar si el saldo es suficiente para apostar
     if capital == "f" and saldo < apuesta:
-        print("Saldo insuficiente para continuar apostando.")
+        # print("Saldo insuficiente para continuar apostando.")
         reiniciar_apuesta()
         cantidad_bancarrotas +=1
         return 0  # Indica que no se puede continuar
