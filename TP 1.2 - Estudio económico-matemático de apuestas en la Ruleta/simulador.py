@@ -18,22 +18,25 @@ def generar_corridas(
     saldo_inicial = 1000
     apuesta_inicial = 100
     corridas_saldo = []
+    corridas = []
 
     for _ in range(cantidad_corridas):
         saldo = saldo_inicial
         apuesta = apuesta_inicial
 
         saldo_por_tirada = [saldo]
-
+        corrida = []
         for _ in range(cantidad_tiradas):
             numero = tirar_numero()
-            if saldo < apuesta and capital == "f":
+            if saldo < apuesta and capital == "f" or apuesta <= 0:
                 break
             else:
                 if numero in color_rojo:
+                    corrida.append(1)
                     saldo += apuesta
                     resultado = 1
                 else:
+                    corrida.append(0)
                     saldo -= apuesta
                     resultado = -1
 
@@ -42,9 +45,10 @@ def generar_corridas(
                     apuesta_inicial, estrategia, resultado, apuesta
                 )
                 apuesta = proxima_apuesta
+        corridas.append(corrida)
         corridas_saldo.append(saldo_por_tirada)
 
-    return corridas_saldo
+    return corridas_saldo, corridas
 
 
 def calcular_prox_apuesta(
@@ -53,8 +57,15 @@ def calcular_prox_apuesta(
     if estrategia == "m":
         if resultado == -1:
             return ultima_apuesta * 2
-        elif resultado == 1:
-            return apuesta_inicial
+        return apuesta_inicial
+    elif estrategia == "d":
+        if resultado == -1:
+            return ultima_apuesta + apuesta_inicial
+        return max(0, ultima_apuesta - apuesta_inicial)
+    elif estrategia == "o":
+        if resultado == 1:
+            return ultima_apuesta * 2
+        return apuesta_inicial
 
 
 """

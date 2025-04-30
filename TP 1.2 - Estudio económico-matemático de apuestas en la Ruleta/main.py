@@ -2,8 +2,12 @@ import argparse
 
 from simulador import generar_corridas
 
-from graficos import generar_grafico_saldos
+from graficos import (
+    generar_grafico_saldos,
+    generar_grafico_frecuencia_apuesta_favorable,
+)
 
+from estadisticas import calcular_frecuencias_relativas
 import os
 
 if not os.path.exists("Graficos"):
@@ -49,10 +53,15 @@ def parse_args():
 def main(
     cantidad_corridas: int, cantidad_tiradas: int, estrategia: str, capital: str
 ) -> None:
-    corridas_saldo = generar_corridas(
+    corridas_saldo, corridas = generar_corridas(
         cantidad_corridas, cantidad_tiradas, estrategia, capital
     )
     generar_grafico_saldos(corridas_saldo, capital)
+
+    # ------#
+    frecuencias_relativas = calcular_frecuencias_relativas(corridas, 1)
+    generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas)
+    print(corridas)
 
 
 if __name__ == "__main__":
