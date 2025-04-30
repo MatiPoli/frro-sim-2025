@@ -23,6 +23,7 @@ def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: 
     # Registrar el saldo inicial
     corridas_bancarrota = []  # Lista para registrar las tiradas en las que se llegó a la bancarrota
     for _ in range(cantidad_corridas):
+        reiniciar_apuesta()
         tiradas = []
         exitos = 0  # Contador de éxitos (números rojos)
         frecuencias_corrida = []  # Frecuencias relativas para esta corrida
@@ -53,7 +54,6 @@ def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: 
             frecuencias_corrida.append(frecuencia_relativa)
 
             # print(f"Tirada: {tirada}, Número: {numero}, Saldo: {saldo}, Apuesta: {apuesta}, Frecuencia Relativa: {frecuencia_relativa}")
-
         corridas.append(tiradas)
         frecuencias_relativas.append(frecuencias_corrida)
         corridas_bancarrota.append(tiradas_bancarrota)
@@ -86,12 +86,14 @@ def reiniciar_apuesta() -> None:
     apuesta_inicial = 1
     indice_fibonacci = 0
 
-def calcular_prox__apuesta(estrategia: str, resultado:int) -> int:
+def calcular_prox__apuesta(estrategia: str, resultado:int):
     global apuesta, apuesta_inicial, indice_fibonacci, fibonacci_secuencia
     
     if(estrategia == "m"):
         if resultado == -1:
             apuesta = apuesta * 2
+        elif resultado == 1:
+            apuesta = apuesta_inicial
 
     elif(estrategia == "d"):
         if resultado == -1:
@@ -114,5 +116,7 @@ def calcular_prox__apuesta(estrategia: str, resultado:int) -> int:
             apuesta = apuesta * 2
         else:  # Si pierde, vuelve a la apuesta inicial
             apuesta = apuesta_inicial
+    
+        
 
 

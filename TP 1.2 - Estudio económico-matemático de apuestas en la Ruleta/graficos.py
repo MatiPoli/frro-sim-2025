@@ -32,7 +32,7 @@ def graficar_saldo(corridas_saldo: list[list[int]], corridas_bancarrota: list[li
     plt.legend()
     plt.grid(True)
     plt.savefig("Graficos/saldo_por_tirada.png")
-    plt.show()
+    #plt.show()
 
 
 def generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas: list[list[float]]) -> None:
@@ -52,7 +52,7 @@ def generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas: list[lis
     plt.tight_layout()
     plt.legend()
     plt.savefig("Graficos/frecuencia_relativa_apuesta_favorable.png")
-    plt.show()
+    #plt.show()
 
 
 def graficar_apuesta_realizada(corridas_apuestas: list[list[int]]):
@@ -67,4 +67,4 @@ def graficar_apuesta_realizada(corridas_apuestas: list[list[int]]):
     plt.legend()
     plt.grid(True)
     plt.savefig("Graficos/apuesta_realizada_por_tirada.png")
-    plt.show()
+    #plt.show()
