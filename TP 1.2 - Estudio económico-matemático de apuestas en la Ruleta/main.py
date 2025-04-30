@@ -5,13 +5,15 @@ from simulador import generar_corridas
 from graficos import (
     graficar_apuesta_realizada,
     graficar_saldo,
-    generar_grafico_frecuencia_apuesta_favorable
+    generar_grafico_frecuencia_apuesta_favorable,
+    graficar_saldo2,
 )
 
 import os
 
 if not os.path.exists("Graficos"):
     os.makedirs("Graficos")
+
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -32,7 +34,7 @@ def parse_args():
         "--estrategia",
         type=str,
         required=True,
-        choices=["m", "d", "f","o"],
+        choices=["m", "d", "f", "o"],
         default=None,
         help="Tipo de estrategia a utilizar: martingala (m), d'Alembert (d), Fibonacci (f) u otra (o)",
     )
@@ -41,18 +43,28 @@ def parse_args():
         "--capital",
         type=str,
         required=True,
-        choices=["i","f"],
+        choices=["i", "f"],
         default=None,
         help="Tipo de capital a utilizar: infinito (i) o finito (f)",
     )
 
     return parser.parse_args()
 
-def main(cantidad_corridas: int, cantidad_tiradas: int, estrategia: str, capital: str) -> None:
-    corridas, corridas_saldo, frecuencias_relativas,apuestas, corridas_bancarrota = generar_corridas(cantidad_corridas, cantidad_tiradas, estrategia, capital)
-    graficar_saldo(corridas_saldo, corridas_bancarrota)
-    generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas)
-    graficar_apuesta_realizada(apuestas)
+
+def main(
+    cantidad_corridas: int, cantidad_tiradas: int, estrategia: str, capital: str
+) -> None:
+    corridas, corridas_saldo = generar_corridas(
+        cantidad_corridas, cantidad_tiradas, estrategia, capital
+    )
+    # graficar_saldo(corridas_saldo, corridas_bancarrota)
+    # generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas)
+    # graficar_apuesta_realizada(apuestas)
+    graficar_saldo2(corridas_saldo)
+    print(corridas_saldo)
+    print()
+    print()
+    print(corridas)
 
 
 if __name__ == "__main__":
@@ -62,6 +74,5 @@ if __name__ == "__main__":
     cantidad_tiradas = args.tiradas
     estrategia = args.estrategia
     capital = args.capital
-
 
     main(cantidad_corridas, cantidad_tiradas, estrategia, capital)
