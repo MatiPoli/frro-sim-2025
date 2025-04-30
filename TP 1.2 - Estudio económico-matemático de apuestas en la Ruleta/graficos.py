@@ -2,9 +2,7 @@ from matplotlib import pyplot as plt
 
 
 def graficar_apuesta_realizada(corridas_apuestas: list[list[int]]):
-    apuesta_inicial = corridas_apuestas[0][
-        0
-    ]  # Obtener la primera apuesta (si querés marcarla)
+    apuesta_inicial = corridas_apuestas[0][0]  # Obtener la primera apuesta (si querés marcarla)
     plt.figure(figsize=(10, 6))
     for i, apuesta_por_tirada in enumerate(corridas_apuestas):
         plt.plot(

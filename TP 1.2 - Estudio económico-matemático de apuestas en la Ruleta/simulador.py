@@ -19,13 +19,14 @@ def generar_corridas(
     apuesta_inicial = 10
     corridas_saldo = []
     corridas = []
+    corridas_apuestas = []
 
     for _ in range(cantidad_corridas):
         saldo = saldo_inicial
         apuesta = apuesta_inicial
-
         saldo_por_tirada = [saldo]
         corrida = []
+        apuestas_por_tirada = []
         for _ in range(cantidad_tiradas):
             indice_fibonacci = 0
             numero = tirar_numero()
@@ -42,14 +43,16 @@ def generar_corridas(
                     resultado = -1
 
                 saldo_por_tirada.append(saldo)
+                apuestas_por_tirada.append(apuesta)
                 proxima_apuesta = calcular_prox_apuesta(
                     apuesta_inicial, estrategia, resultado, apuesta, indice_fibonacci
                 )
                 apuesta = proxima_apuesta
+        corridas_apuestas.append(apuestas_por_tirada)
         corridas.append(corrida)
         corridas_saldo.append(saldo_por_tirada)
 
-    return corridas_saldo, corridas
+    return corridas_saldo, corridas, corridas_apuestas
 
 
 def calcular_prox_apuesta(
