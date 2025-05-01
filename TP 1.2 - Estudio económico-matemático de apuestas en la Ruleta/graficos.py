@@ -8,31 +8,21 @@ import numpy as np
 
 def graficar_saldo(corridas_saldo: list[list[int]], corridas_bancarrota: list[list[int]]) -> None:
     
-    colormap = cm.get_cmap("tab20") 
-    num_colores = len(corridas_saldo)
+    max_tiradas = max(len(s) for s in corridas_saldo)
+    for i, saldo in enumerate(corridas_saldo):
+        saldo_padded = saldo + [None] * (max_tiradas - len(saldo))
+        plt.plot(range(0, max_tiradas), saldo_padded, label=f"Corrida {i + 1}")
 
-    plt.figure(figsize=(12, 8))
-    tot_bancarrotas = 0
-    cantidad_tiradas = len(corridas_saldo[0])
-    saldo_inicial = corridas_saldo[0][0]  # Obtener el saldo inicial  
-    plt.axhline(y=saldo_inicial, color="green", linestyle="--", label="Saldo inicial")   
-    for i, (saldo_por_tirada, tiradas_bancarrota) in enumerate(zip(corridas_saldo, corridas_bancarrota)):
-        color = colormap(i / num_colores)
-        plt.plot(range(1, cantidad_tiradas + 1), saldo_por_tirada, label=f"Corrida {i + 1}", color=color)
-        for tirada in tiradas_bancarrota:
-            plt.scatter(tirada, saldo_por_tirada[tirada], zorder=5, color=color)
-        tot_bancarrotas += len(tiradas_bancarrota)
-
-
-    prom_bancarrotas = tot_bancarrotas / len(corridas_bancarrota) if len(corridas_bancarrota) > 0 else 0    
-    plt.text(0.95, 0.01, f"Promedio Bancarrotas: {prom_bancarrotas}", transform=plt.gca().transAxes,fontsize=12, color="black", ha='right', va='bottom', bbox=dict(facecolor='white', alpha=0.5))
+    plt.axhline(y=1000, color="red", linestyle="--", label="Saldo Inicial")
+    # plt.title(
+    #     "Evolución del saldo en cada corrida con capital "
+    #     + ("finito" if capital == "f" else "infinito")
+    # )
     plt.xlabel("Número de tiradas")
     plt.ylabel("Saldo")
-    plt.title("Evolución del saldo a lo largo de las tiradas")
     plt.legend()
     plt.grid(True)
-    plt.savefig("Graficos/saldo_por_tirada.png")
-    #plt.show()
+    plt.savefig("Graficos/saldos_x_tirada.png")
 
 
 def generar_grafico_frecuencia_apuesta_favorable(frecuencias_relativas: list[list[float]]) -> None:
@@ -68,3 +58,74 @@ def graficar_apuesta_realizada(corridas_apuestas: list[list[int]]):
     plt.grid(True)
     plt.savefig("Graficos/apuesta_realizada_por_tirada.png")
     #plt.show()
+
+
+###########
+
+
+def graficar_apuesta_realizada(corridas_apuestas: list[list[int]]):
+    apuesta_inicial = corridas_apuestas[0][
+        0
+    ]  # Obtener la primera apuesta (si querés marcarla)
+    plt.figure(figsize=(10, 6))
+    for i, apuesta_por_tirada in enumerate(corridas_apuestas):
+        plt.plot(
+            range(1, len(apuesta_por_tirada) + 1),
+            apuesta_por_tirada,
+            label=f"Corrida {i + 1}",
+        )
+    plt.axhline(
+        y=apuesta_inicial, color="orange", linestyle="--", label="Apuesta inicial"
+    )  # Línea constante
+    plt.xlabel("Número de tiradas")
+    plt.ylabel("Monto apostado")
+    plt.title("Evolución de la apuesta realizada a lo largo de las tiradas")
+    plt.legend()
+    plt.grid(True)
+    plt.savefig("Graficos/apuesta_realizada_por_tirada.png")
+
+
+def generar_grafico_saldos(saldos_por_corridas: list[list[int]], capital: str) -> None:
+    plt.figure(figsize=(12, 8))
+
+    max_tiradas = max(len(s) for s in saldos_por_corridas)
+    for i, saldo in enumerate(saldos_por_corridas):
+        saldo_padded = saldo + [None] * (max_tiradas - len(saldo))
+        plt.plot(range(0, max_tiradas), saldo_padded, label=f"Corrida {i + 1}")
+
+    plt.axhline(y=1000, color="red", linestyle="--", label="Saldo Inicial")
+    plt.title(
+        "Evolución del saldo en cada corrida con capital "
+        + ("finito" if capital == "f" else "infinito")
+    )
+    plt.xlabel("Número de tiradas")
+    plt.ylabel("Saldo")
+    plt.legend()
+    plt.grid(True)
+    plt.savefig("Graficos/saldos_x_tirada.png")
+
+
+def generar_grafico_frecuencia_apuesta_favorable(
+    frecuencias_relativas: list[list[float]],
+) -> None:
+    plt.figure(figsize=(12, 8))
+
+    max_tiradas = max(len(s) for s in frecuencias_relativas)
+    for i, saldo in enumerate(frecuencias_relativas):
+        saldo_padded = saldo + [None] * (max_tiradas - len(saldo))
+        plt.plot(range(0, max_tiradas), saldo_padded, label=f"Corrida {i + 1}")
+
+    plt.axhline(
+        y=18 / 37,
+        color="red",
+        linestyle="--",
+        label="Frecuencia Relativa Esperada (18/37)",
+    )
+    plt.xlabel("Número de tiradas")
+    plt.ylabel("Frecuencia relativa acumulada")
+    plt.title("Evolución de la frecuencia relativa de obtener la apuesta favorable")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.legend()
+    plt.savefig("Graficos/frecuencia_relativa_apuesta_favorable.png")
+    # plt.show()

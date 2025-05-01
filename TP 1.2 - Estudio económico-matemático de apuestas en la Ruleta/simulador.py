@@ -1,9 +1,9 @@
 import random
 from sympy import fibonacci
 
-saldo = 10000
-apuesta = 1
-apuesta_inicial = 1
+saldo = 1000
+apuesta = 10
+apuesta_inicial = 10
 color_rojo = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36}
 cantidad_bancarrotas = 0
 
@@ -35,10 +35,13 @@ def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: 
         for tirada in range(1, cantidad_tiradas + 1):
             numero = tirar_numero()
             resultado = evaluar_apuesta_actualiza_saldo(numero, capital)
-
+            
             # Si el saldo es insuficiente, detener la simulación
             if capital == "f" and resultado == 0:
+
                 tiradas_bancarrota.append(len(saldo_por_tirada) + 1)
+                break
+
 
             apuestas.append(apuesta) # Registrar la apuesta actual
             calcular_prox__apuesta(estrategia, resultado)
@@ -68,9 +71,10 @@ def evaluar_apuesta_actualiza_saldo(numero_obtenido: int, capital: str) -> int:
     # Verificar si el saldo es suficiente para apostar
     if capital == "f" and saldo < apuesta:
         # print("Saldo insuficiente para continuar apostando.")
-        reiniciar_apuesta()
+        #reiniciar_apuesta()
         cantidad_bancarrotas +=1
         return 0  # Indica que no se puede continuar
+    
 
     saldo = saldo - apuesta
     if numero_obtenido in color_rojo:
@@ -81,9 +85,9 @@ def evaluar_apuesta_actualiza_saldo(numero_obtenido: int, capital: str) -> int:
     
 def reiniciar_apuesta() -> None:
     global saldo, apuesta, apuesta_inicial, indice_fibonacci
-    saldo = 10000
-    apuesta = 1
-    apuesta_inicial = 1
+    saldo = 1000
+    apuesta = 10
+    apuesta_inicial = 10
     indice_fibonacci = 0
 
 def calcular_prox__apuesta(estrategia: str, resultado:int):
