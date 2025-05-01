@@ -56,22 +56,20 @@ def generar_corridas(cantidad_corridas: int, cantidad_tiradas: int, estrategia: 
             frecuencia_relativa = exitos / tirada
             frecuencias_corrida.append(frecuencia_relativa)
 
-            # print(f"Tirada: {tirada}, Número: {numero}, Saldo: {saldo}, Apuesta: {apuesta}, Frecuencia Relativa: {frecuencia_relativa}")
         corridas.append(tiradas)
         frecuencias_relativas.append(frecuencias_corrida)
         corridas_bancarrota.append(tiradas_bancarrota)
         corridas_saldo.append(saldo_por_tirada)
         corridas_apuestas.append(apuestas)
 
-    return corridas, corridas_saldo, frecuencias_relativas,corridas_apuestas, corridas_bancarrota
+    return corridas_saldo, frecuencias_relativas, corridas_apuestas
 
 def evaluar_apuesta_actualiza_saldo(numero_obtenido: int, capital: str) -> int:
     global saldo, apuesta, color_rojo, cantidad_bancarrotas
 
     # Verificar si el saldo es suficiente para apostar
     if capital == "f" and saldo < apuesta:
-        # print("Saldo insuficiente para continuar apostando.")
-        #reiniciar_apuesta()
+        
         cantidad_bancarrotas +=1
         return 0  # Indica que no se puede continuar
     
@@ -116,9 +114,9 @@ def calcular_prox__apuesta(estrategia: str, resultado:int):
 
     # Otra estrategia: Paroli
     elif estrategia == "o":  
-        if resultado == 1:  # Si gana, duplica la apuesta
+        if resultado == 1: 
             apuesta = apuesta * 2
-        else:  # Si pierde, vuelve a la apuesta inicial
+        else:  
             apuesta = apuesta_inicial
     
         
