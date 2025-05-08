@@ -62,8 +62,9 @@ def test_media(valores):
     return mean
 
 # ---------- Ejecutar y mostrar resultados ----------
-n = 1000
-seed = 5731
+n = 100000
+seed = 84378294
+
 
 cuadrados_vals = cuadrados_medios(seed, n)
 gcl_vals = gcl(seed=7, a=5, c=3, m=16, n=n)
@@ -91,12 +92,15 @@ for name in df.columns:
 
 resultados_df = pd.DataFrame(tests).T
 
-# ---------- Graficar histogramas ----------
-fig, axs = plt.subplots(2, 2, figsize=(12, 8))
-for ax, col in zip(axs.flatten(), df.columns):
-    ax.hist(df[col], bins=10, range=(0.0, 1.0), alpha=0.7, color="skyblue", edgecolor="black")
-    ax.set_title(f"Histograma: {col}")
-plt.tight_layout()
-plt.show()
 
+# ---------- Graficar histogramas en archivos separados ----------
+for col in df.columns:
+    plt.figure(figsize=(6, 4))
+    plt.hist(df[col], bins=10, range=(0.0, 1.0), alpha=0.7, color="skyblue", edgecolor="black")
+    plt.title(f"Histograma: {col}")
+    plt.xlabel("Valor")
+    plt.ylabel("Frecuencia")
+    plt.tight_layout()
+    plt.savefig(f"graficas/histograma_{col.lower()}.png")
+    plt.close()
 print(resultados_df)
