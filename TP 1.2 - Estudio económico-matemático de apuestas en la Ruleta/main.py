@@ -1,3 +1,10 @@
+#  Marcos Godoy
+#  Matias Marquez
+#  Santino Cataldi
+#  Matias Luhmann
+#  Tomás Wardoloff
+#  Maria Paz Battistoni
+
 import argparse
 
 from simulador import generar_corridas
