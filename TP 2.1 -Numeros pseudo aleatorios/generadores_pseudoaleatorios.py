@@ -1,4 +1,3 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -11,13 +10,14 @@ def cuadrados_medios(seed, n, digits=4):
     for _ in range(n):
         squared = str(current**2).zfill(2*digits)
         mid = len(squared) // 2
-        next_val = int(squared[mid - digits//2: mid + digits//2])
-        results.append(next_val / (10**digits))
+        next_val = int(squared[mid - digits//2: mid + digits//2]) #se toman los digitos centrales
+        results.append(next_val / (10**digits)) #se normaliza
         current = next_val
     return results
 
 # ---------- Generador 2: Generador Congruencial Lineal (GCL) ----------
-def gcl(seed, a, c, m, n):
+def gcl(seed, a, c, m, n): #a = multiplicador, c = constante aditiva, m = módulo normalizador
+    # GCL: X_n+1 = (a * X_n + c) mod m
     values = []
     x = seed
     for _ in range(n):
@@ -29,10 +29,10 @@ def gcl(seed, a, c, m, n):
 def xorshift(seed, n):
     results = []
     x = seed
-    for _ in range(n):
-        x ^= (x << 13) & 0xFFFFFFFF
-        x ^= (x >> 17)
-        x ^= (x << 5) & 0xFFFFFFFF
+    for _ in range(n):  #0xFFFFFFFF es el valor máximo de 32 bits, recortando a 32 bits
+        x ^= (x << 13) & 0xFFFFFFFF #desplzamos hacia la izquierda 13 bits de los bits de x(si x=123456789, el bin 32 es 01111000101011010111100100010101) y se compara bit a bit, y se guarda el camparacion, si son iguales 0 y sino 1
+        x ^= (x >> 17) #se desplaza 17 bits a la derecha y se compara bit a bit
+        x ^= (x << 5) & 0xFFFFFFFF #se desplaza 5 bits a la izquierda y se compara bit a bit 
         results.append((x & 0xFFFFFFFF) / 0xFFFFFFFF)
     return results
 
