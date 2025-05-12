@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import random
+import os
 
 # ---------- Generador 1: Cuadrados Medios ----------
 def cuadrados_medios(seed, n, digits=4):
@@ -62,8 +63,8 @@ def test_media(valores):
     return mean
 
 # ---------- Ejecutar y mostrar resultados ----------
-n = 100000
-seed = 84378294
+n = 10000
+seed = 84133294
 
 
 cuadrados_vals = cuadrados_medios(seed, n)
@@ -104,3 +105,24 @@ for col in df.columns:
     plt.savefig(f"graficas/histograma_{col.lower()}.png")
     plt.close()
 print(resultados_df)
+
+
+output_dir = "graficas"
+os.makedirs(output_dir, exist_ok=True)
+
+# Función para generar y guardar la imagen
+def generar_imagen(datos, nombre_archivo):
+    if len(datos) != 10000:
+        raise ValueError("Cada columna debe tener 10.000 números")
+
+    matriz = np.array(datos).reshape((100, 100))
+    plt.imshow(matriz, cmap='gray', interpolation='nearest')
+    plt.axis('off')
+    ruta_completa = os.path.join(output_dir, f"{nombre_archivo}.png")
+    plt.savefig(ruta_completa, bbox_inches='tight', pad_inches=0)
+    plt.close()
+
+# Recorrer las columnas del DataFrame
+for nombre_columna in df.columns:
+    generar_imagen(df[nombre_columna], nombre_columna)
+
