@@ -1,3 +1,10 @@
+#  Marcos Godoy
+#  Matias Marquez
+#  Santino Cataldi
+#  Matias Luhmann
+#  Tomás Wardoloff
+#  Maria Paz Battistoni
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
