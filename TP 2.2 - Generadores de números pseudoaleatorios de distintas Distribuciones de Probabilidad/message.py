@@ -324,7 +324,7 @@ def testear_distribucion(nombre_dist, generador_func, params_dist, teor_media_fu
 
         y_teorico_pmf = scipy_dist_func_pdf_pmf(x_teorico, *params_dist)
         plt.stem(x_teorico, y_teorico_pmf, linefmt='r-', markerfmt='ro', basefmt=" ",
-                 label='PMF Teórica', use_line_collection=True) # 'use_line_collection=True' para versiones nuevas
+                 label='PMF Teórica') # 'use_line_collection=True' para versiones nuevas
         plt.xticks(x_teorico) # Asegurar que los ticks estén en los valores discretos
     else: # Continua
         plt.hist(muestras, bins='auto', density=True, alpha=0.7,
