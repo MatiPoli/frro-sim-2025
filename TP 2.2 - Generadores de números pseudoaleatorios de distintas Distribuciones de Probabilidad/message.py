@@ -30,7 +30,7 @@ def generar_exponencial(lam):
     if u == 0: return float('inf') # Teóricamente P(X=inf)=0
     return -math.log(u) / lam
 
-# 3. NORMAL (continua) - Método: Transformada Inversa (Box-Muller)
+# 3. NORMAL (continua) - Método: Transformada Inversa 
 def generar_normal(mu, sigma):
     if sigma < 0: raise ValueError("Sigma (desviación estándar) debe ser no negativa.")
     if sigma == 0: return mu
@@ -108,10 +108,7 @@ def pmf_poisson(k_val, lam):
         return 0.0
 
 # 4. GAMMA (continua) - Método: RECHAZO
-# Para Gamma(k,theta), generamos Gamma(k,1) y luego multiplicamos por theta.
-# Usaremos el algoritmo de rechazo de Ahrens y Dieter (1974) para Gamma(alpha,1) donde alpha=k.
-# Este es un algoritmo específico, no uno genérico f(x) <= c*g(x) fácilmente derivable.
-# Este algoritmo es eficiente para k > 0. Se divide en casos k < 1 y k >= 1.
+
 def generar_gamma_rechazo(k, theta):
     """Genera Gamma(k, theta) usando el método de rechazo de Ahrens-Dieter (GS para k<1, adaptado para k>=1)."""
     if k <= 0 or theta <= 0:
@@ -417,26 +414,50 @@ def testear_distribucion(nombre_dist, generador_func, params_dist, teor_media_fu
         frecuencias_relativas = conteos / len(muestras)
         plt.bar(val_unicos, frecuencias_relativas, width=0.8 if len(val_unicos) > 1 else 0.1,
                 alpha=0.7, label=f'Muestras (N={len(muestras)})', color='skyblue')
+        
         if rango_grafica_teorica:
             x_teorico = np.arange(rango_grafica_teorica[0], rango_grafica_teorica[1] + 1)
         else:
             min_val_obs = min(val_unicos) if len(val_unicos)>0 else 0
             max_val_obs = max(val_unicos) if len(val_unicos)>0 else 1
-            # Asegurar que el rango teórico cubra al menos el observado
             x_teorico = np.arange(min(min_val_obs,0), max_val_obs + 1)
 
+        # Asegurarse de que x_teorico no está vacío
+        if x_teorico.size == 0:
+            print(f"  ADVERTENCIA {nombre_dist}: x_teorico está vacío. Rango: {rango_grafica_teorica}")
+        else:
+            try:
+                y_teorico_pmf = scipy_dist_func_pdf_pmf(x_teorico, *params_dist)
+                
+                # --- INICIO DE CAMBIOS PARA DEPURACIÓN ---
+                print(f"\n[DEBUG {nombre_dist}] Intentando graficar PMF teórica:")
+                print(f"  x_teorico (primeros/últimos 5): {x_teorico[:5]} ... {x_teorico[-5:] if len(x_teorico)>5 else ''}")
+                print(f"  y_teorico_pmf (primeros/últimos 5): {y_teorico_pmf[:5]} ... {y_teorico_pmf[-5:] if len(y_teorico_pmf)>5 else ''}")
+                print(f"  len(x_teorico): {len(x_teorico)}, len(y_teorico_pmf): {len(y_teorico_pmf)}")
+                print(f"  Suma de y_teorico_pmf: {np.sum(y_teorico_pmf) if y_teorico_pmf.size > 0 else 'N/A'}")
+                # --- FIN DE CAMBIOS PARA DEPURACIÓN ---
 
-        try:
-            y_teorico_pmf = scipy_dist_func_pdf_pmf(x_teorico, *params_dist)
-            plt.stem(x_teorico, y_teorico_pmf, linefmt='r-', markerfmt='ro', basefmt=" ",
-                    label='PMF Teórica', use_line_collection=True)
-            if len(x_teorico) < 20: plt.xticks(x_teorico)
-            elif len(x_teorico) > 0 : # Ticks más espaciados si hay muchos valores
-                 tick_step = max(1, len(x_teorico) // 10)
-                 plt.xticks(x_teorico[::tick_step])
+                if np.any(y_teorico_pmf < 0):
+                    print(f"  ADVERTENCIA {nombre_dist}: y_teorico_pmf contiene valores negativos.")
 
-        except Exception as e_plot_teor:
-            print(f"Error graficando PMF teórica para {nombre_dist} {params_dist}: {e_plot_teor}")
+                # El argumento use_line_collection=True es el comportamiento por defecto en versiones recientes de Matplotlib (3.1+)
+                # y puede ser omitido. Si usas una versión muy antigua, podría ser relevante.
+                # Para Matplotlib 3.4+, use_line_collection=False está deprecado.
+                plt.stem(x_teorico, y_teorico_pmf, linefmt='r-', markerfmt='ro', basefmt=" ",
+                         label='PMF Teórica') # use_line_collection=True eliminado para usar el default
+                
+                if len(x_teorico) < 20: 
+                    plt.xticks(x_teorico)
+                elif len(x_teorico) > 0 : 
+                     tick_step = max(1, len(x_teorico) // 10)
+                     # Asegurar que los ticks sean enteros si x_teorico son enteros
+                     plt.xticks(x_teorico[::tick_step].astype(int) if np.issubdtype(x_teorico.dtype, np.integer) else x_teorico[::tick_step])
+
+            except Exception as e_plot_teor:
+                print(f"Error graficando PMF teórica para {nombre_dist} {params_dist}: {e_plot_teor}")
+                # Imprimir traceback para más detalles
+                import traceback
+                traceback.print_exc()
 
     else: # Continua
         plt.hist(muestras, bins='auto', density=True, alpha=0.7,
