@@ -342,9 +342,6 @@ def generar_empirica_discreta_rechazo(valores, probabilidades):
             return valor_candidato
 
 # -----------------------------------------------------------------------------
-# FUNCIONES DE TESTEO (SIN CAMBIOS MAYORES, PERO SE ADAPTA A LA LÓGICA DE RECHAZO)
-# -----------------------------------------------------------------------------
-# -----------------------------------------------------------------------------
 # FUNCIONES DE TESTEO (MODIFICADA PARA SOLO GRAFICAR)
 # -----------------------------------------------------------------------------
 def testear_distribucion(nombre_dist, generador_func, params_dist,
@@ -451,7 +448,6 @@ if __name__ == "__main__":
     # --- Test Uniforme (T. Inversa) ---
     a_unif, b_unif = 2, 10
     testear_distribucion( "Uniforme", generar_uniforme, (a_unif, b_unif),
-        # Se eliminaron: lambda a,b: (a+b)/2, lambda a,b: ((b-a)**2)/12,
         lambda x,a,b: uniform.pdf(x, loc=a, scale=b-a),
         N_muestras=N_GLOBAL, es_discreta=False, usa_rechazo=False,
         rango_grafica_teorica=(a_unif -1, b_unif +1))
@@ -459,7 +455,6 @@ if __name__ == "__main__":
     # --- Test Exponencial (T. Inversa) ---
     lam_exp = 0.5
     testear_distribucion("Exponencial", generar_exponencial, (lam_exp,),
-        # Se eliminaron: lambda l:1/l, lambda l:1/(l**2),
         lambda x,l: expon.pdf(x, scale=1/l),
         N_muestras=N_GLOBAL, es_discreta=False, usa_rechazo=False,
         rango_grafica_teorica=(0, expon.ppf(0.999, scale=1/lam_exp)))
@@ -467,7 +462,6 @@ if __name__ == "__main__":
     # --- Test Normal (T. Inversa - Box Muller) ---
     mu_norm, sigma_norm = 5, 2
     testear_distribucion("Normal", generar_normal, (mu_norm, sigma_norm),
-        # Se eliminaron: lambda mu,sig:mu, lambda mu,sig:sig**2,
         lambda x,mu,sig: norm.pdf(x, loc=mu, scale=sig),
         N_muestras=N_GLOBAL, es_discreta=False, usa_rechazo=False,
         rango_grafica_teorica=(norm.ppf(0.001, mu_norm, sigma_norm), norm.ppf(0.999, mu_norm, sigma_norm)))
@@ -477,7 +471,6 @@ if __name__ == "__main__":
     # --- Test Gamma (RECHAZO) ---
     k_g, th_g = 0.7, 2.5 # k < 1
     testear_distribucion("Gamma (k<1)", generar_gamma_rechazo, (k_g, th_g),
-        # Se eliminaron: lambda k,t:k*t, lambda k,t:k*(t**2),
         lambda x,k,t: gamma.pdf(x, a=k, scale=t),
         N_muestras=N_GLOBAL, es_discreta=False, usa_rechazo=True,
         rango_grafica_teorica=(0, gamma.ppf(0.999, a=k_g, scale=th_g) if k_g > 0 else 10))
@@ -486,8 +479,7 @@ if __name__ == "__main__":
     # --- Test Pascal (RECHAZO) ---
     r_pasc, p_pasc = 5, 0.4
     testear_distribucion("Pascal", generar_pascal_rechazo, (r_pasc, p_pasc),
-        # Se eliminaron: lambda r,p: r*(1-p)/p, lambda r,p: r*(1-p)/(p**2),
-        lambda k,r,p: nbinom.pmf(k, r, p), # Scipy nbinom: k=fracasos, n=exitos(r), p=prob_exito
+        lambda k,r,p: nbinom.pmf(k, r, p),
         N_muestras=N_GLOBAL, es_discreta=True, usa_rechazo=True,
         rango_grafica_teorica=(0, int(nbinom.ppf(0.999, n=r_pasc, p=p_pasc)) + 5))
 
@@ -502,9 +494,6 @@ if __name__ == "__main__":
     # --- Test Hipergeométrica (RECHAZO) ---
     N_h, K_h, n_h = 60, 15, 20
     testear_distribucion("Hipergeométrica", generar_hipergeometrica_rechazo, (N_h, K_h, n_h),
-        # Se eliminaron: lambda M,K,n_s: n_s*(K/M) if M>0 else 0,
-        #                  lambda M,K,n_s: n_s*(K/M)*(1-K/M)*((M-n_s)/(M-1)) if M>1 else 0,
-        lambda k,M,n_K,N_n_s: hypergeom.pmf(k, M, n_K, N_n_s), # Scipy: M=N_total, n=K_exitos_pob, N=n_muestra
         N_muestras=N_GLOBAL, es_discreta=True, usa_rechazo=True,
         rango_grafica_teorica=(max(0, n_h-(N_h-K_h)), min(n_h, K_h)))
 
@@ -525,8 +514,6 @@ if __name__ == "__main__":
             except ValueError: res.append(0)
         return np.array(res)
     testear_distribucion("Empírica Discreta", generar_empirica_discreta_rechazo, (val_emp, prob_emp),
-        # Se eliminaron: lambda v,p: np.sum(np.array(v)*np.array(p)),
-        #                  lambda v,p: np.sum( ((np.array(v) - np.sum(np.array(v)*np.array(p)))**2) * np.array(p) ),
         lambda k,v,p: pmf_emp(k,v,p),
         N_muestras=N_GLOBAL, es_discreta=True, usa_rechazo=True,
         rango_grafica_teorica=(min(val_emp),max(val_emp)))
