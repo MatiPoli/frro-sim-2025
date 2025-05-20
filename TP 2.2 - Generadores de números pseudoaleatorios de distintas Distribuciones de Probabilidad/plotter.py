@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 # No se necesita generar_U01 directamente aquí
 # Tampoco las funciones de FDP/FP teóricas de SciPy, ya que se pasan como lambda en main.py
+import os
+
+# Crear carpeta si no existe
 
 def testear_distribucion(nombre_dist, generador_func, params_dist,
                          scipy_dist_func_pdf_pmf, N_muestras=10000, es_discreta=False,
@@ -88,4 +91,11 @@ def testear_distribucion(nombre_dist, generador_func, params_dist,
     plt.ylabel('Densidad / Probabilidad')
     plt.legend()
     plt.grid(True, linestyle='--', alpha=0.7)
-    plt.show()
+    os.makedirs("graficos", exist_ok=True)
+    nombre_archivo = f"graficos/{nombre_dist}_{'_'.join(map(str, params_dist))}_{'rechazo' if usa_rechazo else 'tinversa'}.png"
+
+    # Reemplazar caracteres no válidos para nombres de archivo en Windows
+    caracteres_invalidos = ['<', '>', ':', '"', '/', '\\', '|', '?', '*', '(', ')', ',', ' ']
+    for c in caracteres_invalidos:
+        nombre_archivo = nombre_archivo.replace(c, '_')
+    plt.savefig(nombre_archivo)
