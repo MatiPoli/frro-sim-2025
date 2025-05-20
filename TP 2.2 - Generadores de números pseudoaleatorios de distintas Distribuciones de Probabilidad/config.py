@@ -1,2 +1,1 @@
-# config.py
-N_GLOBAL = 5000 # Reducido por si los rechazos son lentos
+N_GLOBAL = 5000  # Reducido por si los rechazos son lentos
