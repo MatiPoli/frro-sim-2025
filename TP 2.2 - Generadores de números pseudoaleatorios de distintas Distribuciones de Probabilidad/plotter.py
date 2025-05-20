@@ -91,11 +91,6 @@ def testear_distribucion(nombre_dist, generador_func, params_dist,
     plt.ylabel('Densidad / Probabilidad')
     plt.legend()
     plt.grid(True, linestyle='--', alpha=0.7)
-    os.makedirs("graficos", exist_ok=True)
-    nombre_archivo = f"graficos/{nombre_dist}_{'_'.join(map(str, params_dist))}_{'rechazo' if usa_rechazo else 'tinversa'}.png"
-
-    # Reemplazar caracteres no válidos para nombres de archivo en Windows
-    caracteres_invalidos = ['<', '>', ':', '"', '/', '\\', '|', '?', '*', '(', ')', ',', ' ']
-    for c in caracteres_invalidos:
-        nombre_archivo = nombre_archivo.replace(c, '_')
+    os.makedirs("graficas", exist_ok=True)
+    nombre_archivo = f"graficas/{nombre_dist}_{'_'.join(map(str, params_dist))}_{'rechazo' if usa_rechazo else 'tinversa'}.png"
     plt.savefig(nombre_archivo)

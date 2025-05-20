@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     # --- Test Gamma (RECHAZO) ---
     k_g, th_g = 0.7, 2.5 # k < 1
-    testear_distribucion("Gamma (k<1)", generar_gamma_rechazo, (k_g, th_g),
+    testear_distribucion("Gamma (k menor a 1)", generar_gamma_rechazo, (k_g, th_g),
         lambda x,k,t: gamma.pdf(x, a=k, scale=t),
         N_muestras=N_GLOBAL, es_discreta=False, usa_rechazo=True,
         rango_grafica_teorica=(0, gamma.ppf(0.999, a=k_g, scale=th_g) if k_g > 0 else 10))
