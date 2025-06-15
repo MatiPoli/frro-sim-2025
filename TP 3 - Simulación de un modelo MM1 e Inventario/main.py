@@ -9,10 +9,9 @@ import matplotlib.pyplot as plt
 
 def cliente(env, nombre, servidor, resultados):
     """Proceso que representa el ciclo de vida de un cliente."""
-    llegada = env.now
+    llegada = env.now #Marca la entrada del cliente
     
     # Comprobar si hay espacio en la cola (para el caso de cola finita)
-    # El recurso servidor tiene una cola 'queue' y una cola de peticiones 'users'
     if len(servidor.queue) >= servidor.capacidad_cola:
         # Denegación de servicio
         resultados['denegados'] += 1
@@ -20,7 +19,7 @@ def cliente(env, nombre, servidor, resultados):
 
     # El cliente solicita el servidor
     with servidor.request() as req:
-        yield req
+        yield req #aca se queda esperando en la "cola" hasta que el servidor le devuelva el flujo.
         
         # El cliente es atendido
         inicio_servicio = env.now
@@ -29,7 +28,7 @@ def cliente(env, nombre, servidor, resultados):
         
         # Simular tiempo de servicio (Exponencial)
         tasa_servicio = resultados['parametros']['tasa_servicio']
-        tiempo_servicio = random.expovariate(tasa_servicio)
+        tiempo_servicio = random.expovariate(tasa_servicio) #tiempo que el cliente ocupa el servidor
         yield env.timeout(tiempo_servicio)
         
         # El cliente se va
@@ -44,7 +43,7 @@ def generador_clientes(env, servidor, resultados):
     i = 0
     while True:
         # Simular tiempo entre llegadas (Exponencial)
-        yield env.timeout(random.expovariate(tasa_llegada))
+        yield env.timeout(random.expovariate(tasa_llegada)) #Se pausa la ejeción 
         i += 1
         env.process(cliente(env, f'Cliente {i}', servidor, resultados))
 
@@ -221,12 +220,12 @@ def simular_inventario(params):
 #-------------------------------------------------------------------------------
 # EJECUCIÓN PRINCIPAL Y PARAMETRIZACIÓN
 #-------------------------------------------------------------------------------
-if _name_ == "_main_":
+if __name__ == "__main__":
     # --- PARÁMETROS PARA LA SIMULACIÓN M/M/1 ---
     # Puedes modificar estos valores para cada experimento
     params_mm1 = {
         # Elige una tasa de servicio, ej. 10 clientes por hora
-        'tasa_servicio': 10.0,
+        'tasa_servicio': 15.0,
         
         # Elige una tasa de llegada (λ). Prueba variando esto:
         # 0.75 * tasa_servicio = 7.5 (utilización del 75%)
