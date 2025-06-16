@@ -69,7 +69,9 @@ def simular_mm1(params):
     plt.xlabel("Tiempo Promedio en Sistema (W) por corrida")
     plt.ylabel("Frecuencia")
     plt.grid(True)
+    plt.savefig('distribucion_tiempo_sistema.png')
     plt.show()
+    # Guardar la gráfica como imagen
 
 
 
@@ -199,7 +201,10 @@ def simular_inventario_por_area(params):
     ax.set_title(f"Composición del Costo Promedio Mensual\n(Política s={params['punto_reorden_s']}, S={params['nivel_maximo_S']})")
     ax.set_ylabel('Costo Promedio ($/mes)')
     ax.legend()
+    
+    plt.savefig('costos_inventario.png')
     plt.show()
+    #guardar la gráfica como imagen
 
     ## MODIFICADO ##: Graficar la evolución del inventario Y LOS PUNTOS DE PEDIDO
     if historial_inventario_grafica:
@@ -228,7 +233,10 @@ def simular_inventario_por_area(params):
         
         plt.grid(True, which='both', linestyle='--', linewidth=0.5)
         plt.legend()
+        #Guardar la gráfica como imagen
+        plt.savefig('evolucion_inventario.png')
         plt.show()
+
 
 #-------------------------------------------------------------------------------
 # EJECUCIÓN PRINCIPAL Y PARAMETRIZACIÓN
@@ -272,4 +280,4 @@ if __name__ == "__main__":
         'tiempo_simulacion': 1000 # Horas de simulación
     }
 
-    #simular_mm1(params_mm1)
+    simular_mm1(params_mm1)
