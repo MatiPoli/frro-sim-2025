@@ -189,6 +189,25 @@ def simular_inventario_por_area(params):
 if __name__ == "__main__":
     # --- PARÁMETROS PARA LA SIMULACIÓN DE INVENTARIO (EN MESES, COMO EL LIBRO) ---
     # Se cambian los nombres y valores de los parámetros para usar MESES como unidad de tiempo
+
+    params_mm1 = {
+        # Elige una tasa de servicio, ej. 10 clientes por hora
+        'tasa_servicio': 15.0,
+        
+        # Elige una tasa de llegada (λ). Prueba variando esto:
+        # 0.75 * tasa_servicio = 7.5 (utilización del 75%)
+        # 1.00 * tasa_servicio = 10.0 (utilización del 100%, sistema crítico)
+        'tasa_llegada': 7.5, 
+        
+        # Para cola finita, usa un número (0, 2, 5, 10, 50). 
+        # Para cola infinita, usa float('inf')
+        'tamano_cola_finita': float('inf'), 
+        
+        'num_corridas': 30,
+        'tiempo_simulacion': 1000 # Horas de simulación
+    }
+    
+    simular_mm1(params_mm1)
     params_inventario = {
         'punto_reorden_s': 20,
         'nivel_maximo_S': 40,
