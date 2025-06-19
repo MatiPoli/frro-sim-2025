@@ -71,15 +71,12 @@ def simular_mm1(params):
     plt.grid(True)
     plt.savefig('distribucion_tiempo_sistema.png')
     plt.show()
-    # Guardar la gráfica como imagen
-
-
 
 #-------------------------------------------------------------------------------
 # MODELO DE INVENTARIO 
 #-------------------------------------------------------------------------------
 
-# Funciones auxiliares (Sin cambios en la lógica)
+# Funciones auxiliares (Sin cambios)
 def generar_tamano_demanda(prob_acumulada):
     u = random.random()
     if u < prob_acumulada[0]: return 1
@@ -98,15 +95,12 @@ def actualizar_costos_por_area(env, estado, params):
     estado['tiempo_ultimo_evento'] = env.now
     estado['nivel_ultimo_evento'] = estado['nivel']
 
-# Procesos principales del sistema de inventario (con adiciones para registrar historial)
+# Procesos principales del sistema de inventario (Sin cambios)
 def proceso_llegada_orden(env, estado, cantidad_pedida, params):
     tiempo_entrega = random.uniform(params['min_tiempo_entrega_meses'], params['max_tiempo_entrega_meses'])
     yield env.timeout(tiempo_entrega)
-    
     actualizar_costos_por_area(env, estado, params)
     estado['nivel'] += cantidad_pedida
-    
-    ## NUEVO ##: Registrar el cambio en el historial si existe la lista
     if 'historial_inventario' in estado:
         estado['historial_inventario'].append((env.now, estado['nivel']))
 
@@ -114,35 +108,36 @@ def generador_demanda_con_backlog(env, estado, params):
     tasa_demanda_mes = 1.0 / params['media_llegada_demanda_meses']
     while True:
         yield env.timeout(random.expovariate(tasa_demanda_mes))
-        
         actualizar_costos_por_area(env, estado, params)
-        
         cantidad_demandada = generar_tamano_demanda(params['prob_acum_demanda'])
         estado['nivel'] -= cantidad_demandada
-
-        ## NUEVO ##: Registrar el cambio en el historial si existe la lista
         if 'historial_inventario' in estado:
             estado['historial_inventario'].append((env.now, estado['nivel']))
 
 def evaluacion_periodica_inventario(env, estado, params):
     while True:
         if estado['nivel'] < params['punto_reorden_s']:
-            ## NUEVO ##: Registrar el momento del pedido si el historial existe
             if 'historial_pedidos' in estado:
                 estado['historial_pedidos'].append((env.now, estado['nivel']))
-
             cantidad_a_pedir = params['nivel_maximo_S'] - estado['nivel']
             costo_orden_actual = params['costo_fijo_orden'] + (params['costo_incremental_orden'] * cantidad_a_pedir)
             estado['costo_total_ordenes'] += costo_orden_actual
             env.process(proceso_llegada_orden(env, estado, cantidad_a_pedir, params))
-        
         yield env.timeout(params['periodo_revision_meses'])
 
 def simular_inventario_por_area(params):
     print(f"\n--- Iniciando Simulación de Inventario (Costos por Área/Integral) ---")
     print(f"Política (s, S): ({params['punto_reorden_s']}, {params['nivel_maximo_S']}), Período Revisión: {params['periodo_revision_meses']} meses")
     
-    ## NUEVO ##: Preparar listas para guardar los historiales de la primera corrida
+    ## CAMBIO 1: Crear listas para guardar los resultados de cada corrida ##
+    resultados_corridas = {
+        'orden': [],
+        'mantenimiento': [],
+        'faltante': [],
+        'total': []
+    }
+
+    # Esto se queda igual, para graficar solo la primera corrida
     historial_inventario_grafica = []
     historial_pedidos_grafica = []
 
@@ -158,10 +153,10 @@ def simular_inventario_por_area(params):
             'area_faltante': 0.0,
         }
 
-        ## MODIFICADO ##: Si es la primera corrida, creamos AMBAS listas en el 'estado'
+        # La lógica para guardar el historial de la primera corrida no cambia
         if i == 0:
             estado['historial_inventario'] = [(0, params['inventario_inicial'])]
-            estado['historial_pedidos'] = [] # Lista para los puntos de pedido
+            estado['historial_pedidos'] = []
         
         env.process(evaluacion_periodica_inventario(env, estado, params))
         env.process(generador_demanda_con_backlog(env, estado, params))
@@ -170,27 +165,40 @@ def simular_inventario_por_area(params):
 
         actualizar_costos_por_area(env, estado, params)
 
-        ## MODIFICADO ##: Si fue la primera corrida, guardamos ambos historiales
+        # La lógica para guardar el historial de la primera corrida no cambia
         if i == 0:
             historial_inventario_grafica = estado['historial_inventario']
             historial_pedidos_grafica = estado['historial_pedidos']
 
-    # ... (Cálculo de costos y gráfica de barras siguen exactamente igual) ...
-    # ... (Copiando el código de la respuesta anterior para que esté completo) ...
-    costo_total_ordenes = estado['costo_total_ordenes']
-    costo_total_mantenimiento = estado['area_mantenimiento'] * params['costo_mantenimiento_mes']
-    costo_total_faltante = estado['area_faltante'] * params['costo_faltante_mes']
-    costo_total_final = costo_total_ordenes + costo_total_mantenimiento + costo_total_faltante
-    num_meses = params['tiempo_simulacion_meses']
-    avg_orden_mes = costo_total_ordenes / num_meses
-    avg_mantenimiento_mes = costo_total_mantenimiento / num_meses
-    avg_faltante_mes = costo_total_faltante / num_meses
-    avg_total_mes = costo_total_final / num_meses
-    print("\nResultados de Costos (Promedio por Mes, basado en la última corrida):")
+        ## CAMBIO 2: Mover los cálculos de costos aquí, DENTRO del bucle ##
+        costo_total_ordenes = estado['costo_total_ordenes']
+        costo_total_mantenimiento = estado['area_mantenimiento'] * params['costo_mantenimiento_mes']
+        costo_total_faltante = estado['area_faltante'] * params['costo_faltante_mes']
+        costo_total_final = costo_total_ordenes + costo_total_mantenimiento + costo_total_faltante
+        num_meses = params['tiempo_simulacion_meses']
+
+        ## CAMBIO 3: Guardar los resultados de ESTA corrida en las listas ##
+        resultados_corridas['orden'].append(costo_total_ordenes / num_meses)
+        resultados_corridas['mantenimiento'].append(costo_total_mantenimiento / num_meses)
+        resultados_corridas['faltante'].append(costo_total_faltante / num_meses)
+        resultados_corridas['total'].append(costo_total_final / num_meses)
+    
+    # --- FIN DEL BUCLE ---
+
+    ## CAMBIO 4: Calcular el promedio de todas las corridas guardadas ##
+    avg_orden_mes = np.mean(resultados_corridas['orden'])
+    avg_mantenimiento_mes = np.mean(resultados_corridas['mantenimiento'])
+    avg_faltante_mes = np.mean(resultados_corridas['faltante'])
+    avg_total_mes = np.mean(resultados_corridas['total'])
+
+    ## CAMBIO 5: Actualizar el texto del print para que sea correcto ##
+    print(f"\nResultados de Costos (Promedio por Mes, basado en {params['num_corridas']} corridas):")
     print(f"  - Costo de Orden:        ${avg_orden_mes:,.2f}")
     print(f"  - Costo de Mantenimiento: ${avg_mantenimiento_mes:,.2f}")
     print(f"  - Costo de Faltante:      ${avg_faltante_mes:,.2f}")
     print(f"  - Costo Total:           ${avg_total_mes:,.2f}")
+
+    # El código de las gráficas no cambia
     labels = [f"Política ({params['punto_reorden_s']}, {params['nivel_maximo_S']})"]
     costos_plot = {'Orden': [avg_orden_mes], 'Mantenimiento': [avg_mantenimiento_mes], 'Faltante': [avg_faltante_mes]}
     fig, ax = plt.subplots(figsize=(10, 5))
@@ -201,50 +209,33 @@ def simular_inventario_por_area(params):
     ax.set_title(f"Composición del Costo Promedio Mensual\n(Política s={params['punto_reorden_s']}, S={params['nivel_maximo_S']})")
     ax.set_ylabel('Costo Promedio ($/mes)')
     ax.legend()
-    
     plt.savefig('costos_inventario.png')
     plt.show()
-    #guardar la gráfica como imagen
 
-    ## MODIFICADO ##: Graficar la evolución del inventario Y LOS PUNTOS DE PEDIDO
     if historial_inventario_grafica:
         tiempos_inv, niveles_inv = zip(*historial_inventario_grafica)
-        
         plt.figure(figsize=(12, 6))
         plt.step(tiempos_inv, niveles_inv, where='post', label='Nivel de Inventario')
-        
-        ## NUEVO ##: Añadir los puntos de pedido a la gráfica
         if historial_pedidos_grafica:
             tiempos_ped, niveles_ped = zip(*historial_pedidos_grafica)
-            plt.scatter(tiempos_ped, niveles_ped, 
-                        color='green', 
-                        marker='*', 
-                        s=150,  # Tamaño del marcador
-                        zorder=5, # Asegura que esté por encima de la línea
-                        label='Punto de Pedido')
-
+            plt.scatter(tiempos_ped, niveles_ped, color='green', marker='*', s=150, zorder=5, label='Punto de Pedido')
         plt.title('Evolución del Nivel de Inventario (Primera Corrida)')
         plt.xlabel('Tiempo (Meses)')
         plt.ylabel('Nivel de Inventario (Unidades)')
         plt.axhline(0, color='red', linestyle='--', linewidth=0.8, label='Nivel Cero (Backlog)')
-        
-        # Opcional: También podemos dibujar la línea del punto de reorden 's' para referencia
         plt.axhline(params['punto_reorden_s'], color='orange', linestyle=':', linewidth=1.0, label=f'Punto de Reorden (s={params["punto_reorden_s"]})')
-        
         plt.grid(True, which='both', linestyle='--', linewidth=0.5)
         plt.legend()
-        #Guardar la gráfica como imagen
         plt.savefig('evolucion_inventario.png')
         plt.show()
 
-
 #-------------------------------------------------------------------------------
-# EJECUCIÓN PRINCIPAL Y PARAMETRIZACIÓN
+# EJECUCIÓN PRINCIPAL Y PARAMETRIZACIÓN (Sin cambios)
 #-------------------------------------------------------------------------------
 if __name__ == "__main__":
     params_inventario = {
         'punto_reorden_s': 20,
-        'nivel_maximo_S': 80, # Aumentado para ver una dinámica más interesante
+        'nivel_maximo_S': 80,
         'periodo_revision_meses': 1.0,
         
         'media_llegada_demanda_meses': 0.1,
@@ -260,24 +251,16 @@ if __name__ == "__main__":
         
         'inventario_inicial': 60,
         'tiempo_simulacion_meses': 120,
-        'num_corridas': 10 # Se harán 10 corridas, pero solo se graficará la primera
+        'num_corridas': 30 # Cambiado a 30 para coincidir con el informe
     }
     simular_inventario_por_area(params_inventario)
-    params_mm1 = {
-        # Elige una tasa de servicio, ej. 10 clientes por hora
-        'tasa_servicio': 15.0,
-        
-        # Elige una tasa de llegada (λ). Prueba variando esto:
-        # 0.75 * tasa_servicio = 7.5 (utilización del 75%)
-        # 1.00 * tasa_servicio = 10.0 (utilización del 100%, sistema crítico)
-        'tasa_llegada': 7.5, 
-        
-        # Para cola finita, usa un número (0, 2, 5, 10, 50). 
-        # Para cola infinita, usa float('inf')
-        'tamano_cola_finita': float('inf'), 
-        
-        'num_corridas': 30,
-        'tiempo_simulacion': 1000 # Horas de simulación
-    }
-
-    simular_mm1(params_mm1)
+    
+    # Comenta esta parte si no quieres correr el M/M/1
+    # params_mm1 = {
+    #     'tasa_servicio': 15.0,
+    #     'tasa_llegada': 7.5, 
+    #     'tamano_cola_finita': float('inf'), 
+    #     'num_corridas': 30,
+    #     'tiempo_simulacion': 1000
+    # }
+    # simular_mm1(params_mm1)
