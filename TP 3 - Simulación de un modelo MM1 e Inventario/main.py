@@ -4,21 +4,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #-------------------------------------------------------------------------------
-# MODELO 1: SIMULACIÓN DE COLAS M/M/1 (SIN CAMBIOS)
+# MODELO 1: SIMULACIÓN DE COLAS M/M/1
 #-------------------------------------------------------------------------------
 def cliente(env, nombre, servidor, resultados):
     llegada = env.now
-    if len(servidor.queue) >= servidor.capacidad_cola:
+    
+    # Si el servidor está ocupado Y la cola interna está llena hasta su capacidad_cola
+    if servidor.count == 1 and len(servidor.queue) >= servidor.capacidad_cola:
         resultados['denegados'] += 1
         return
+        
+    # Si el servidor está libre (servidor.count == 0) O hay espacio en la cola
     with servidor.request() as req:
         yield req
+        
         inicio_servicio = env.now
         tiempo_en_cola = inicio_servicio - llegada
         resultados['tiempos_en_cola'].append(tiempo_en_cola)
+        
         tasa_servicio = resultados['parametros']['tasa_servicio']
         tiempo_servicio = random.expovariate(tasa_servicio)
         yield env.timeout(tiempo_servicio)
+        
         salida = env.now
         tiempo_en_sistema = salida - llegada
         resultados['tiempos_en_sistema'].append(tiempo_en_sistema)
@@ -40,28 +47,42 @@ def simular_mm1(params):
         env = simpy.Environment()
         servidor = simpy.Resource(env, capacity=1)
         servidor.capacidad_cola = params['tamano_cola_finita']
-        resultados_corrida = {'tiempos_en_sistema': [], 'tiempos_en_cola': [], 'clientes_atendidos': 0, 'denegados': 0, 'parametros': params}
+        
+        resultados_corrida = {
+            'tiempos_en_sistema': [], 
+            'tiempos_en_cola': [], 
+            'clientes_atendidos': 0, 
+            'denegados': 0, 
+            'parametros': params
+        }
+        
         env.process(generador_clientes(env, servidor, resultados_corrida))
         env.run(until=params['tiempo_simulacion'])
+        
         total_llegadas = resultados_corrida['clientes_atendidos'] + resultados_corrida['denegados']
+        
         if resultados_corrida['clientes_atendidos'] > 0:
             avg_w = np.mean(resultados_corrida['tiempos_en_sistema'])
             avg_wq = np.mean(resultados_corrida['tiempos_en_cola'])
+            
             tiempo_ocupado = sum(resultados_corrida['tiempos_en_sistema']) - sum(resultados_corrida['tiempos_en_cola'])
             utilizacion = tiempo_ocupado / params['tiempo_simulacion']
         else:
             avg_w, avg_wq, utilizacion = 0, 0, 0
+        
         prob_denegacion = resultados_corrida['denegados'] / total_llegadas if total_llegadas > 0 else 0
+        
         resultados_finales['promedio_w'].append(avg_w)
         resultados_finales['promedio_wq'].append(avg_wq)
         resultados_finales['utilizacion'].append(utilizacion)
         resultados_finales['prob_denegacion'].append(prob_denegacion)
+    
     print(f"\nResultados Promedio (de {params['num_corridas']} corridas):")
     print(f"  - Tiempo promedio en sistema (W): {np.mean(resultados_finales['promedio_w']):.4f}")
     print(f"  - Tiempo promedio en cola (Wq):   {np.mean(resultados_finales['promedio_wq']):.4f}")
     print(f"  - Utilización del servidor (ρ):   {np.mean(resultados_finales['utilizacion']):.4f}")
-    if params['tamano_cola_finita'] != float('inf'):
-      print(f"  - Prob. Denegación Servicio:    {np.mean(resultados_finales['prob_denegacion']):.4f}")
+    print(f"  - Prob. Denegación Servicio:      {np.mean(resultados_finales['prob_denegacion']):.4f}")
+    
     plt.figure(figsize=(10, 5))
     plt.hist(resultados_finales['promedio_w'], bins=10, edgecolor='black')
     plt.title(f'Distribución del Tiempo Promedio en Sistema (W)\nλ={params["tasa_llegada"]}, μ={params["tasa_servicio"]}, K={params["tamano_cola_finita"]}')
@@ -71,9 +92,8 @@ def simular_mm1(params):
     plt.savefig('distribucion_tiempo_sistema.png')
     plt.show()
 
-#-------------------------------------------------------------------------------
-# MODELO DE INVENTARIO 
-#-------------------------------------------------------------------------------
+
+### MODELO DE INVENTARIO (Sin cambios, incluido para mantener el archivo completo)
 def generar_tamano_demanda(prob_acumulada):
     u = random.random()
     if u < prob_acumulada[0]: return 1
@@ -180,10 +200,10 @@ def simular_inventario_por_area(params):
     avg_total_mes = np.mean(resultados_corridas['total'])
 
     print(f"\nResultados de Costos (Promedio por Mes, basado en {params['num_corridas']} corridas):")
-    print(f"  - Costo de Orden:        ${avg_orden_mes:,.2f}")
+    print(f"  - Costo de Orden:          ${avg_orden_mes:,.2f}")
     print(f"  - Costo de Mantenimiento: ${avg_mantenimiento_mes:,.2f}")
-    print(f"  - Costo de Faltante:      ${avg_faltante_mes:,.2f}")
-    print(f"  - Costo Total:           ${avg_total_mes:,.2f}")
+    print(f"  - Costo de Faltante:       ${avg_faltante_mes:,.2f}")
+    print(f"  - Costo Total:             ${avg_total_mes:,.2f}")
 
     labels = [f"Política ({params['punto_reorden_s']}, {params['nivel_maximo_S']})"]
     costos_plot = {'Orden': [avg_orden_mes], 'Mantenimiento': [avg_mantenimiento_mes], 'Faltante': [avg_faltante_mes]}
@@ -237,13 +257,13 @@ if __name__ == "__main__":
         
         'inventario_inicial': 60,
         'tiempo_simulacion_meses': 120,
-        'num_corridas': 30 # Cambiado a 30 para coincidir con el informe
+        'num_corridas': 30
     }
     simular_inventario_por_area(params_inventario)
     
     params_mm1 = {
         'tasa_servicio': 15.0,
-        'tasa_llegada': 7.5,
+        'tasa_llegada': 3.75,
         'tamano_cola_finita': float('inf'),
         'num_corridas': 30,
         'tiempo_simulacion': 1000
